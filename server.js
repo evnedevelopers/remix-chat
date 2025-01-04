@@ -8,6 +8,8 @@ import compression from "compression";
 import express from "express";
 import morgan from "morgan";
 import sourceMapSupport from "source-map-support";
+import { Server } from "socket.io";
+import http from "http";
 
 sourceMapSupport.install({
   retrieveSourceMap: function (source) {
@@ -36,9 +38,41 @@ const initialBuild = await reimportServer();
 const remixHandler =
   process.env.NODE_ENV === "development"
     ? await createDevRequestHandler(initialBuild)
-    : createRequestHandler({ build: initialBuild });
+    : createRequestHandler({
+      build: initialBuild,
+      getLoadContext: () => ({
+        io
+      })
+    });
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+io?.on("connection", (socket) => {
+  console.log(`Client connected: ${socket.id}`);
+
+  socket.on("joinChat", (chatId) => {
+    socket.join(chatId);
+    console.log(`Socket ${socket.id} joined chat ${chatId}`);
+  });
+
+  socket.on("sendMessage", (payload) => {
+    console.log("Send message: ", {
+      clientId: socket.id,
+      payload
+    });
+
+    io.to(payload.chatId).emit("receiveMessage", payload);
+  })
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+})
+
+io?.emit("server-event", { message: "Hello from the server!" });
+
 
 app.use(compression());
 
@@ -60,7 +94,7 @@ app.use(morgan("tiny"));
 app.all("*", remixHandler);
 
 const port = process.env.PORT || 3000;
-app.listen(port, async () => {
+server.listen(port, async () => {
   console.log(`Express server listening at http://localhost:${port}`);
 
   if (process.env.NODE_ENV === "development") {
@@ -105,6 +139,9 @@ async function createDevRequestHandler(initialBuild) {
       return createRequestHandler({
         build,
         mode: "development",
+        getLoadContext: () => ({
+          io
+        })
       })(req, res, next);
     } catch (error) {
       next(error);
