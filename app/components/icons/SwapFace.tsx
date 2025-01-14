@@ -1,0 +1,25 @@
+import React from 'react';
+
+import { SvgIcon, SvgIconProps } from '@mui/material';
+
+const SwapFace: React.FC<SvgIconProps> = (props) => {
+  return (
+    <SvgIcon {...props}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M2 2H16.5V4H4V16.5H2V2ZM56 4H43.5V2H58V16.5H56V4ZM4 56V43.5H2V58H16.5V56H4ZM56 56V43.5H58V58H43.5V56H56Z"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M30 9C20.6018 9 13 16.5407 13 25.8218H11C11 15.4174 19.516 7 30 7C40.484 7 49 15.4174 49 25.8218H47C47 16.5407 39.3982 9 30 9ZM20.3422 45.8951C23.2207 49.6387 26.5698 52 30 52C33.4302 52 36.7793 49.6387 39.6578 45.8951C42.511 42.1844 44.7441 37.309 45.9679 32.7412L47.8998 33.2588C46.6197 38.0369 44.2826 43.1614 41.2432 47.1142C38.2291 51.0343 34.3632 54 30 54C25.6368 54 21.7709 51.0343 18.7568 47.1142C15.7174 43.1614 13.3803 38.0369 12.1002 33.2588L14.0321 32.7412C15.2559 37.309 17.489 42.1844 20.3422 45.8951Z"
+      />
+      <path d="M53 25L53 27L7 27L7 25L53 25Z" />
+      <path d="M53 32L53 34L7 34L7 32L53 32Z" />
+      <path d="M35 41L35 43L25 43L25 41L35 41Z" />
+    </SvgIcon>
+  );
+};
+
+export default SwapFace;

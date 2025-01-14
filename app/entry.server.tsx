@@ -11,6 +11,10 @@ import { createReadableStreamFromReadable } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import { isbot } from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import { CacheProvider } from "@emotion/react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import createEmotionCache from "~/mui/createEmotionCache";
+import theme from "~/mui/theme";
 
 const ABORT_DELAY = 5_000;
 
@@ -47,12 +51,19 @@ function handleBotRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+    const cache = createEmotionCache();
     const { pipe, abort } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+      <CacheProvider value={cache}>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <RemixServer
+            context={remixContext}
+            url={request.url}
+            abortDelay={ABORT_DELAY}
+          />
+        </ThemeProvider>
+      </CacheProvider>,
       {
         onAllReady() {
           shellRendered = true;
@@ -97,12 +108,20 @@ function handleBrowserRequest(
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+    const cache = createEmotionCache();
+
     const { pipe, abort } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+      <CacheProvider value={cache}>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <RemixServer
+            context={remixContext}
+            url={request.url}
+            abortDelay={ABORT_DELAY}
+          />
+        </ThemeProvider>
+      </CacheProvider>,
       {
         onShellReady() {
           shellRendered = true;
