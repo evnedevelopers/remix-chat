@@ -22,6 +22,9 @@ export const users: IUser[] = [
         code: 'free',
         paypal_plan_id: '',
         price: ''
+      },
+      subscription_coupon: {
+        subscription_type: {}
       }
     },
   },
@@ -46,6 +49,9 @@ export const users: IUser[] = [
         code: 'free',
         paypal_plan_id: '',
         price: ''
+      },
+      subscription_coupon: {
+        subscription_type: {}
       }
     }
   }

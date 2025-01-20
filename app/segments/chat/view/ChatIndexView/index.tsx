@@ -13,6 +13,9 @@ import { projectsSlice } from "~/store/slices/projects.slice";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
 import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
+import {IconButton} from "~/components/uiKit/IconButton";
+import ArrowDownward from "~/components/icons/ArrowDownward";
+import {MessagesList} from "~/segments/chat/MessagesList";
 
 export const ChatIndexView: FC = () => {
   const theme = useTheme();
@@ -88,7 +91,35 @@ export const ChatIndexView: FC = () => {
       <Box sx={styles.head}>
       </Box>
 
-      <EmptyChat projectName={projectName} size={size} />
+      {
+        projectsMessages.length
+          ? <>
+            {visible && (
+              <Box
+                sx={{
+                  bottom: `calc(${size}px + ${isLg ? '26px' : '40px'})`,
+                  ...styles.iconButton,
+                }}>
+                <IconButton onClick={scrollToBottom} color={'default'}>
+                  <ArrowDownward fontSize={'small'} />
+                </IconButton>
+              </Box>
+            )}
+            <MessagesList
+              size={size}
+              currentChatId={currentChatId}
+              projectsMessages={projectsMessages}
+              scrollToBottom={scrollToBottom}
+              setVisible={setVisible}
+              sendMessage={sendMessage}
+              value={value}
+              setValue={setValue}
+            />
+          </>
+          : (
+            <EmptyChat projectName={projectName} size={size} />
+          )
+      }
 
       <Box ref={refInput} width={'100%'}>
         <ChatInputButtons

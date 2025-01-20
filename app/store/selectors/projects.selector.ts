@@ -94,7 +94,7 @@ export const getProjectsMessagesByChatId = (chatId?: string) =>
     if (chatId && projects.length) {
       return (
         projects
-          .find((project) => project.chats.some((chat) => chat.id === +chatId))
+          .find((project) => project.chats.some((chat) => chat.id === chatId))
           ?.chats.find((chat) => chat.id === chatId)?.messages ?? null
       );
     }
@@ -132,6 +132,7 @@ export const getNewestMessageId = (chatId?: string, name?: string) =>
 
 export const getCurrentDescription = (name?: string) =>
   createSelector([projectsSelector], (result) => {
+    console.log(name, result.projects.find((project) => project.name === name), result.projects);
     return (
       result.projects.find((project) => project.name === name)?.description ??
       ''

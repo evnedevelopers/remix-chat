@@ -1,11 +1,14 @@
-import { IChat } from "~/utils/typedefs";
+import { IChatEntity } from "~/utils/typedefs";
 import { users } from "~/utils/mocks/users";
+import { projects } from "~/utils/mocks/projects";
 
-export const chats: IChat[] = [
+export const chats: IChatEntity[] = [
   {
     id: '1',
     name: 'Remix Chat',
-    description: 'Description for Remix Chat',
-    participants: [users[0].id, users[1].id],
+    created_at: new Date(Date.now() - 3600).toISOString(),
+    participantIds: [users[0].id, users[1].id],
+    projectId: projects[0].id,
+    waiting_user_response: false,
   }
 ];

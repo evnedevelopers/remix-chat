@@ -1,3 +1,108 @@
+// entity types
+
+export interface IProjectEntity {
+  id: string;
+  name: string;
+  description: string;
+  icon_dark: string;
+  icon_light: string;
+}
+
+export interface IChatEntity {
+  id: string;
+  name: string;
+  created_at: string;
+  participantIds: IUser['id'][];
+  projectId: IProjectEntity['id'];
+  waiting_user_response: boolean | null;
+}
+
+export interface IMessageEntity {
+  id: string;
+  text: string;
+  author: string;
+  audio?: string | null;
+  created_at: string;
+  message_rate: boolean | null;
+  saved_at: string | null;
+  chatId?: string;
+  projectId?: string;
+  humanMessageId?: number;
+  type?: string;
+  tokenIndex?: number;
+  continueStatus?: boolean;
+  nextToken?: boolean;
+  show_create_chat_message: boolean;
+}
+
+// response types
+
+export interface IProjects extends IProjectEntity {
+  chats: IChat[];
+  years: [];
+  guidances: []
+}
+
+export interface IChat extends Omit<IChatEntity, 'participantIds' | 'projectId'> {
+  number_of_messages: number;
+  messages: IMessages | null;
+  files: [];
+  is_file_context: boolean;
+}
+
+export interface IMessages {
+  status?: boolean;
+  count?: number;
+  results: IMessage[];
+}
+
+export interface IMessage extends IMessageEntity {
+  project: IMessageProject | null;
+  images: [];
+  fork_chat: IForkChat | null;
+  chat: IMessageChat | null;
+  suggestingQuestions?: any;
+  files: [];
+}
+
+export interface IMessageChat {
+  id: string;
+  name: string;
+  project: IMessageChatProject | null;
+  created_at: string;
+}
+
+export interface IMessageChatProject {
+  id: string;
+  name: string;
+}
+
+export interface IMessageProject {
+  id: string;
+  name: string;
+  icon_light: string;
+  icon_dark: string;
+}
+
+export interface IForkChat {
+  id: string;
+  name: string;
+  project: { id: string; name: string; } | null;
+  created_at: string;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 export interface IUser {
   id: string;
   username: string;
@@ -28,31 +133,12 @@ export interface IUser {
   }
 }
 
-export interface IProjects {
-  id: string;
-  name: string;
-  chats: IChat[],
-  years: [],
-  description: string;
-  icon_light: string;
-  icon_dark: string;
-  guidances: [];
-}
 
-export interface IChat {
-  id: string;
-  name: string;
-  description: string;
-  participants: string[];
-}
 
-export interface IMessage {
-  id: string;
-  text: string;
-  chatId: string;
-  authorId: string;
-  createdAt: string;
-}
+
+
+
+
 
 export interface IChatFile {}
 
@@ -67,5 +153,6 @@ export interface IScaleImage {
   id?: number | string;
   isShare: boolean;
   isDelete?: boolean;
+  // eslint-disable-next-line
   handleDelete?: any;
 }

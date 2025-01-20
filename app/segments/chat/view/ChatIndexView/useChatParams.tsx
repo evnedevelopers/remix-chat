@@ -8,7 +8,7 @@ export const useChatParams = () => {
   return useMemo(() => {
     return {
       projectName: projects[0]?.name,
-      chatId: projects[1]?.chats[0]?.id,
+      chatId: projects[0]?.chats[0]?.id,
     }
   }, [projects]);
 }

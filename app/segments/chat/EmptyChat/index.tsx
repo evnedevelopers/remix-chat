@@ -1,11 +1,11 @@
 import { FC } from 'react';
+import { useSelector } from "react-redux";
 
-import { Box, Typography } from '@mui/material';
-import { useLoaderData } from "@remix-run/react";
+import { Box, Typography, useTheme } from '@mui/material';
 
-import { ILoaderFunctionResult } from "~/routes/chat";
 import Chat2 from '~/components/icons/Chat2';
-import theme from "~/mui/theme";
+
+import { getCurrentDescription } from "~/store/selectors/projects.selector";
 
 import { styles } from './styles';
 
@@ -15,7 +15,8 @@ type EmptyChatProps = {
 };
 
 export const EmptyChat: FC<EmptyChatProps> = ({ projectName, size }) => {
-  const { chat } = useLoaderData<ILoaderFunctionResult>();
+  const theme = useTheme();
+  const description = useSelector(getCurrentDescription(projectName));
 
   return (
     <Box sx={(theme) => styles.emptyChat(theme, size)}>
@@ -32,7 +33,7 @@ export const EmptyChat: FC<EmptyChatProps> = ({ projectName, size }) => {
         maxWidth={'580px'}
         textAlign={'center'}
       >
-        {chat.description}
+        {description}
       </Typography>
     </Box>
   );

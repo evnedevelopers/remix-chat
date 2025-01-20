@@ -13,6 +13,7 @@ import {
 } from "~/store/selectors/profile.slice";
 import { useLimits } from "~/hooks/useLimits";
 import { projectsSlice } from "~/store/slices/projects.slice";
+import {useChatParams} from "~/segments/chat/view/ChatIndexView/useChatParams";
 
 export const useChatPage = (
   value: string,
@@ -22,9 +23,9 @@ export const useChatPage = (
   projectName?: string,
 ) => {
   const dispatch = useDispatch();
-  const { chat } = useLoaderData<ILoaderFunctionResult>();
+  const { chatId } = useChatParams();
   const projectsMessages = useSelector(
-    getProjectsMessages(chat.id, projectName),
+    getProjectsMessages(chatId, projectName),
   );
   const { enqueueSnackbar } = useSnackbar();
   const canDoAction = useSelector(getCanDoAction);
