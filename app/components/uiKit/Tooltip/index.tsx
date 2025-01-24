@@ -37,7 +37,6 @@ export const Tooltip: FC<TooltipProps> = ({
 }) => {
   const theme = useTheme();
 
-
   const handleClose = () => {
 
   };
@@ -75,5 +74,3 @@ export const Tooltip: FC<TooltipProps> = ({
     </MuiTooltip>
   );
 };
-
-export default Tooltip;

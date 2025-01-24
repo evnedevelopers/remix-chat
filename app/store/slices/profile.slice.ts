@@ -1,5 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IProjects, IScaleImage, IUser } from "~/utils/typedefs";
+
+import {
+  ChangeChatActionPayload,
+  ChangePhotoActionPayload,
+  FillProfileActionPayload,
+  FillTokensSettingsActionPayload,
+  IScaleImage,
+  UpdateGuidanceActionPayload
+} from "~/store/typedefs";
+import { IProjects, ISubscription, IUser } from "~/utils/typedefs";
 
 export const profileSlice = createSlice({
   name: 'profile',
@@ -42,7 +51,7 @@ export const profileSlice = createSlice({
     closeProfileTooltip(state) {
       state.showProfileTooltip = false;
     },
-    fillProfile(state, action: PayloadAction<IUser>) {
+    fillProfile(state, action: PayloadAction<FillProfileActionPayload>) {
       if (state.profile) {
         state.profile = { ...state.profile, ...action.payload };
       } else {
@@ -64,6 +73,36 @@ export const profileSlice = createSlice({
       localStorage.clear();
       sessionStorage.clear();
     },
+    updateSubscription(state, action: PayloadAction<ISubscription>) {
+      if (state.profile) {
+        state.profile = {
+          ...state.profile,
+          tokens: action.payload?.tokens ?? state.profile.tokens,
+          subscription: {
+            ...action.payload,
+          },
+        };
+      }
+    },
+    cancelSubscription(state) {
+      if (state?.profile?.subscription) {
+        state.profile = {
+          ...state.profile,
+          subscription: {
+            ...state.profile.subscription,
+            paypal_status: 'CANCELLED',
+          },
+        };
+      }
+    },
+    changePhoto(state, action: PayloadAction<ChangePhotoActionPayload>) {
+      if (state.profile) {
+        state.profile = {
+          ...state.profile,
+          ...action.payload,
+        };
+      }
+    },
     setDatasetsOpen(state) {
       state.isDatasetsOpen = true;
     },
@@ -72,6 +111,111 @@ export const profileSlice = createSlice({
     },
     setCurrentDataset(state, action: PayloadAction<IProjects | null>) {
       state.currentDataset = action.payload;
+    },
+    updateGuidance(state, action: PayloadAction<UpdateGuidanceActionPayload>) {
+      if (state.currentDataset) {
+        state.currentDataset = {
+          ...state.currentDataset,
+          guidances: state.currentDataset.guidances.map((guide) => {
+            if (action.payload.guide.id === guide.id) {
+              return action.payload.guide;
+            }
+
+            return guide;
+          }),
+        };
+      }
+    },
+    changeCurrentDataset(
+      state,
+      action: PayloadAction<ChangeChatActionPayload>,
+    ) {
+      if (state.currentDataset) {
+        state.currentDataset = {
+          ...state.currentDataset,
+          chats: state.currentDataset.chats.map((chat) => {
+            if (chat.id === action.payload.id) {
+              return { ...chat, ...action.payload };
+            }
+
+            return chat;
+          }),
+          years: state.currentDataset.years?.map((year) => {
+            return {
+              ...year,
+              months: year.months?.map((month) => {
+                return {
+                  ...month,
+                  chats: month.chats.map((chat) => {
+                    if (chat.id === action.payload.id) {
+                      return { ...chat, ...action.payload };
+                    }
+
+                    return chat;
+                  }),
+                };
+              }),
+            };
+          }),
+        };
+      }
+    },
+    removeChat(state, action: PayloadAction<string>) {
+      if (state.currentDataset) {
+        state.currentDataset = {
+          ...state.currentDataset,
+          chats: state.currentDataset.chats.filter(
+            (chat) => chat.id !== action.payload,
+          ),
+          years: state.currentDataset.years
+            ?.map((year) => {
+              return {
+                ...year,
+                months: year.months
+                  ?.map((month) => {
+                    return {
+                      ...month,
+                      chats: month.chats.filter(
+                        (chat) => chat.id !== action.payload,
+                      ),
+                    };
+                  })
+                  .filter((item) => !!item.chats.length),
+              };
+            })
+            .filter((year) => !!year.months.length),
+        };
+      }
+    },
+    fillTokensSettings(
+      state,
+      action: PayloadAction<FillTokensSettingsActionPayload>,
+    ) {
+      if (state.profile) {
+        state.profile = { ...state.profile, ...action.payload };
+      }
+    },
+    removeChatFile(
+      state,
+      action: PayloadAction<{ chatId: string; fileId: string }>,
+    ) {
+      if (state.currentDataset) {
+        state.currentDataset = {
+          ...state.currentDataset,
+          chats: state.currentDataset.chats.map((chat) => {
+            if (chat.id !== action.payload.chatId) {
+              return chat;
+            }
+
+            return {
+              ...chat,
+              files: chat.files.filter(
+                (file) => file.id !== action.payload.fileId,
+              ),
+            };
+          }),
+        };
+      }
     },
   },
 })

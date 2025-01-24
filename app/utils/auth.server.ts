@@ -1,6 +1,7 @@
 import { users } from "~/utils/mocks/users";
 import { json, createCookieSessionStorage, redirect } from '@remix-run/node'
 import * as process from "node:process";
+import {findUserProfile} from "~/utils/profile.server";
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -40,7 +41,7 @@ export async function getAuthUser(request: Request) {
 
   if (typeof userId !== 'string') return null;
 
-  const user = users.find((user) => user.id === userId);
+  const user = findUserProfile(userId);
 
   return user || null;
 }
@@ -56,13 +57,13 @@ export async function authenticate(request: Request) {
 }
 
 export const login = ({
-  username,
+  email,
   password,
 }: {
-  username: string,
+  email: string,
   password: string
 }) => {
-  const user = users.find((user) => user.username === username);
+  const user = users.find((user) => user.email === email);
 
   if (!user || user.password !== password) {
     return json({ error: `Incorrect login` }, { status: 400 });

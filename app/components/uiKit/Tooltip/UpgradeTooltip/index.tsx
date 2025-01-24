@@ -36,5 +36,3 @@ export const UpgradeTooltip: FC<UpgradeTooltipProps> = ({
     </Box>
   );
 };
-
-export default UpgradeTooltip;

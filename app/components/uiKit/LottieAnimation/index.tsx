@@ -22,5 +22,3 @@ export const LottieAnimation: FC<LottieAnimationProps> = ({
     </Box>
   );
 };
-
-export default LottieAnimation;

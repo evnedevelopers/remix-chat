@@ -1,58 +1,50 @@
-import { IUser } from "~/utils/typedefs";
+import { IUserEntity } from "~/utils/typedefs";
 
-export const users: IUser[] = [
+export const users: IUserEntity[] = [
   {
     id: '1',
-    username: 'test1',
+    first_name: 'First',
+    last_name: 'User',
+    email: 'test1@test.com',
     password: '123456',
-    fullName: 'First User',
+    photo: null,
+    date_of_birth: '01-01-2000',
+    gender: 'male',
+    on_boarding: false,
+    paypal_payment_status: null,
+    ennealogy_number: null,
+    visual_adjustments: false,
     tokens: 1000,
     token_question_price: 10,
+    token_visualization_price: 20,
     token_story_price: 20,
-    token_visualization_price: 10,
-    on_boarding: true,
-    paypal_payment_status: '',
-    subscription: {
-      limits: 100,
-      visualize_limits: 10,
-      storyteller_limit: 10,
-      token_story_price: 10,
-      paypal_status: '',
-      subscription_plan: {
-        code: 'free',
-        paypal_plan_id: '',
-        price: ''
-      },
-      subscription_coupon: {
-        subscription_type: {}
-      }
-    },
+    min_tokens: 0,
+    max_tokens: 10000,
+    token_price: 100,
+    token_metametric_price: 100,
+    show_update_modal_window: true
   },
   {
     id: '2',
-    username: 'test2',
+    first_name: 'Second',
+    last_name: 'User',
+    email: 'test2@test.com',
     password: '123456',
-    fullName: 'Second User',
+    photo: null,
+    date_of_birth: '05-06-1998',
+    gender: 'female',
+    on_boarding: false,
+    paypal_payment_status: null,
+    ennealogy_number: null,
+    visual_adjustments: true,
     tokens: 1000,
     token_question_price: 10,
+    token_visualization_price: 20,
     token_story_price: 20,
-    token_visualization_price: 10,
-    on_boarding: true,
-    paypal_payment_status: '',
-    subscription: {
-      limits: 50,
-      visualize_limits: 10,
-      storyteller_limit: 10,
-      token_story_price: 10,
-      paypal_status: '',
-      subscription_plan: {
-        code: 'free',
-        paypal_plan_id: '',
-        price: ''
-      },
-      subscription_coupon: {
-        subscription_type: {}
-      }
-    }
+    min_tokens: 0,
+    max_tokens: 10000,
+    token_price: 100,
+    token_metametric_price: 100,
+    show_update_modal_window: true,
   }
 ]

@@ -38,5 +38,3 @@ export const EmptyChat: FC<EmptyChatProps> = ({ projectName, size }) => {
     </Box>
   );
 };
-
-export default EmptyChat;

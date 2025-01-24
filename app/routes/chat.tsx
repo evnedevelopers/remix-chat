@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLoaderData } from "@remix-run/react";
 import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
@@ -7,17 +6,15 @@ import { ChatIndexView } from "~/segments/chat/view/ChatIndexView";
 import { SocketProvider } from "~/segments/chat/view/ChatIndexView/SocketContext";
 
 import { authenticate } from "~/utils/auth.server";
-import { IChat, IMessage, IUser, IProjects } from "~/utils/typedefs";
+import { IUser, IProjects } from "~/utils/typedefs";
 import { findUserProjects } from "~/utils/project.server";
 
 import { projectsSlice } from "~/store/slices/projects.slice";
+import { profileSlice } from "~/store/slices/profile.slice";
 
 export interface ILoaderFunctionResult {
   authUser: IUser;
-  chat: Exclude<IChat, 'participants'> & { participants: IUser[] };
-  messages: IMessage[];
-  // eslint-disable-next-line
-  projects: Array<IProjects & Record<string, any>>;
+  projects: IProjects[];
 }
 
 export const meta: MetaFunction = () => {
@@ -33,17 +30,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   return json({
     authUser,
-    projects
+    projects,
   } as ILoaderFunctionResult);
 }
 
 export default function ChatIndex() {
   const dispatch = useDispatch();
-  const { projects } = useLoaderData<ILoaderFunctionResult>();
+  const { projects, authUser } = useLoaderData<ILoaderFunctionResult>();
 
-  useEffect(() => {
-    dispatch(projectsSlice.actions.fillProjects(projects));
-  }, [dispatch, projects]);
+  dispatch(projectsSlice.actions.fillProjects(projects));
+  dispatch(profileSlice.actions.fillProfile(authUser));
 
   return (
     <SocketProvider>

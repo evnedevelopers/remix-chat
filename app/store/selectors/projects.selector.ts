@@ -1,4 +1,5 @@
 import { createSelector } from "reselect";
+
 import { RootState } from "~/store";
 
 const projectsSelector = (state: RootState) => state.projects;
@@ -47,7 +48,7 @@ export const getProjectIcon = (name?: string) =>
 
 export const getProjectId = (name?: string) =>
   createSelector([projectsSelector], (result) => {
-    return result.projects.find((project) => project.name === name)?.id ?? 0;
+    return result.projects.find((project) => project.name === name)?.id ?? '';
   });
 
 export const getProjectsMessages = (chatId?: string, name?: string) =>
@@ -132,7 +133,6 @@ export const getNewestMessageId = (chatId?: string, name?: string) =>
 
 export const getCurrentDescription = (name?: string) =>
   createSelector([projectsSelector], (result) => {
-    console.log(name, result.projects.find((project) => project.name === name), result.projects);
     return (
       result.projects.find((project) => project.name === name)?.description ??
       ''
@@ -210,8 +210,6 @@ export const getChatData = (chatId?: string) =>
       return { currentYearId: null, currentMonthId: null, id: null };
     }
 
-    const id = parseInt(chatId, 10);
-
     const foundChat = projects
       .flatMap((project) => project.years)
       .flatMap((year) => {
@@ -219,7 +217,7 @@ export const getChatData = (chatId?: string) =>
           return month.chats;
         });
       })
-      .find((chat) => chat.id === id);
+      .find((chat) => chat.id === chatId);
 
     if (foundChat) {
       return {
@@ -227,7 +225,7 @@ export const getChatData = (chatId?: string) =>
         currentMonthId: new Date(foundChat.created_at).toLocaleString('en-US', {
           month: 'long',
         }),
-        id,
+        id: chatId,
       };
     }
 

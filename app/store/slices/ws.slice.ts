@@ -25,5 +25,8 @@ export const wsSlice = createSlice({
     setOpenedSockets(state, action: PayloadAction<boolean>) {
       state.isOpenedSockets = action.payload;
     },
+    setApprovedOrder(state, action: PayloadAction<boolean>) {
+      state.isApprovedOrder = action.payload;
+    },
   },
 });

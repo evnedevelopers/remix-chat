@@ -9,12 +9,12 @@ import { IMessage } from "~/utils/typedefs";
 
 
 export const useChatSocket = () => {
-  const { chat, authUser } = useLoaderData<ILoaderFunctionResult>();
+  const { projects, authUser } = useLoaderData<ILoaderFunctionResult>();
   const { socket } = useSocketContext();
 
   useEffect(() => {
     if (socket) {
-      socket.emit("joinChat", chat.id);
+      socket.emit("joinChat", projects[0].chats[0].id);
 
       socket.on("receiveMessage", (payload: IMessage) => {
         console.log(payload);
@@ -24,5 +24,5 @@ export const useChatSocket = () => {
     return () => {
       socket?.off("receiveMessage");
     }
-  }, [chat, authUser, socket]);
+  }, [projects, authUser, socket]);
 }

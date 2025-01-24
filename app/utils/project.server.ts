@@ -1,6 +1,7 @@
 import { projects } from "~/utils/mocks/projects";
 import { findProjectChats, findUserChats } from "~/utils/chat.server";
 import { IMessageChatProject, IMessageProject, IProjects } from "~/utils/typedefs";
+import { findAllGuidance } from "~/utils/guidance.server";
 
 export const findUserProjects = (userId: string): IProjects[] => {
   const chats = findUserChats(userId);
@@ -12,7 +13,7 @@ export const findUserProjects = (userId: string): IProjects[] => {
       ...project,
       chats: findProjectChats(project.id),
       years: [],
-      guidances: []
+      guidances: findAllGuidance()
     }
   });
 }

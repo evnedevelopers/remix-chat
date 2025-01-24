@@ -1,5 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IProjects } from "~/utils/typedefs";
+
+import { IChat, IMessage, IMessageImage, IProjects } from "~/utils/typedefs";
+import {
+  AddChatActionPayload,
+  ChangeChatActionPayload,
+  FillAddChatFileActionPayload,
+  FillAutoNameActionPayload,
+  FillMessageAudioActionPayload,
+  FillMessageChatActionPayload,
+  FillMessagesActionPayload,
+  FillProjectMatchingActionPayload,
+  FillProjectsActionPayload,
+  FillSaveMessageActionPayload,
+  FillVisualizePromptActionPayload,
+  IProjectCurrent,
+  PostRateActionPayload,
+  UpdateGuidanceActionPayload
+} from "~/store/typedefs";
+
+import { getDate } from "~/helpers/getDateTime";
 
 export const projectsSlice = createSlice({
   name: 'projects',
@@ -38,9 +57,9 @@ export const projectsSlice = createSlice({
     stopAudioFetching(state) {
       state.isAudioFetching = false;
     },
-    fillProjects(state, action: PayloadAction<IProjects[]>) {
+    fillProjects(state, action: PayloadAction<FillProjectsActionPayload>) {
       state.projects = action.payload.map((project) => {
-        const chatsByYear: any = {};
+        const chatsByYear: Record<string, Record<string, IChat[]>> = {};
 
         project.chats.forEach((chat) => {
           const year = new Date(chat.created_at).getFullYear();
@@ -83,8 +102,8 @@ export const projectsSlice = createSlice({
     fillMessages(
       state,
       action: PayloadAction<{
-        data: IMessages;
-        chatId: number;
+        data: FillMessagesActionPayload;
+        chatId: string;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -111,8 +130,8 @@ export const projectsSlice = createSlice({
     pushMoreMessages(
       state,
       action: PayloadAction<{
-        data: IMessages;
-        chatId: number | null;
+        data: FillMessagesActionPayload;
+        chatId: string | null;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -141,8 +160,8 @@ export const projectsSlice = createSlice({
     pushMoreCustomMessages(
       state,
       action: PayloadAction<{
-        data: IMessages;
-        chatId: number | null;
+        data: FillMessagesActionPayload;
+        chatId: string | null;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -170,8 +189,8 @@ export const projectsSlice = createSlice({
     pushPrevMoreMessages(
       state,
       action: PayloadAction<{
-        data: IMessages;
-        chatId: number | null;
+        data: FillMessagesActionPayload;
+        chatId: string | null;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -200,7 +219,7 @@ export const projectsSlice = createSlice({
     clearMessages(
       state,
       action: PayloadAction<{
-        chatId: number | null;
+        chatId: string | null;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -219,6 +238,7 @@ export const projectsSlice = createSlice({
         };
       });
     },
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     setMessages(state, action: PayloadAction<any>) {
       const errorIndex = action.payload.projectsMessages.findIndex(
         (ms: any) => ms.type === 'error',
@@ -284,7 +304,7 @@ export const projectsSlice = createSlice({
                 }
 
                 return action.payload.show_create_chat_message &&
-                message?.project?.id === action.payload.project.id
+                message?.project?.id === action.payload.project?.id
                   ? {
                     ...message,
                     show_create_chat_message: false,
@@ -424,7 +444,7 @@ export const projectsSlice = createSlice({
     },
     addChat(
       state,
-      action: PayloadAction<{ data: IChat; projectId: number }>,
+      action: PayloadAction<{ data: AddChatActionPayload; projectId: string }>,
     ) {
       state.projects = state.projects.map((project) => {
         if (project.id === action.payload.projectId) {
@@ -432,9 +452,9 @@ export const projectsSlice = createSlice({
           const year = chatDate.getFullYear();
           const month = chatDate.toLocaleString('en-US', { month: 'long' });
 
-          let yearIndex = project.years.findIndex((y) => y.id === year);
+          let yearIndex = project.years.findIndex((y) => y.id === year.toString());
           if (yearIndex === -1) {
-            yearIndex = project.years?.unshift({ id: year, months: [] }) - 1;
+            yearIndex = project.years?.unshift({ id: year.toString(), months: [] }) - 1;
           }
 
           const monthIndex = project.years[yearIndex].months.findIndex(
@@ -500,7 +520,7 @@ export const projectsSlice = createSlice({
         };
       });
     },
-    removeChat(state, action: PayloadAction<number>) {
+    removeChat(state, action: PayloadAction<string>) {
       state.projects = state.projects.map((project) => {
         return {
           ...project,
@@ -523,7 +543,7 @@ export const projectsSlice = createSlice({
         };
       });
     },
-    saveMessage(state, action: PayloadAction<ISavedMessage>) {
+    saveMessage(state, action: PayloadAction<FillSaveMessageActionPayload>) {
       state.projects = state.projects.map((project) => {
         return {
           ...project,
@@ -548,9 +568,9 @@ export const projectsSlice = createSlice({
             };
           }),
         };
-      }) as any;
+      });
     },
-    removeSavedMessage(state, action: PayloadAction<number>) {
+    removeSavedMessage(state, action: PayloadAction<string>) {
       state.projects = state.projects.map((project) => {
         return {
           ...project,
@@ -610,9 +630,9 @@ export const projectsSlice = createSlice({
     addImages(
       state,
       action: PayloadAction<{
-        id: number | string;
-        chatId: number | null;
-        images: any;
+        id: string;
+        chatId: string | null;
+        images: IMessageImage[];
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -646,8 +666,8 @@ export const projectsSlice = createSlice({
     updateImages(
       state,
       action: PayloadAction<{
-        id: number;
-        chatId: number;
+        id: string;
+        chatId: string;
         images: any[];
         error: string | null;
       }>,
@@ -700,7 +720,7 @@ export const projectsSlice = createSlice({
     clearVisualizePrompt(state) {
       state.visualizePrompt = null;
     },
-    fillAutoName(state, action: PayloadAction<IAutoName>) {
+    fillAutoName(state, action: PayloadAction<FillAutoNameActionPayload>) {
       state.projects = state.projects.map((project) => {
         return {
           ...project,
@@ -739,14 +759,14 @@ export const projectsSlice = createSlice({
       action: PayloadAction<FillMessageChatActionPayload>,
     ) {
       state.projects = state.projects.map((project) => {
-        if (project.id === action.payload.new_message.project.id) {
+        if (project.id === action.payload.new_message.project?.id) {
           const chatDate = new Date(action.payload.new_chat.created_at);
           const year = chatDate.getFullYear();
           const month = chatDate.toLocaleString('en-US', { month: 'long' });
 
-          let yearIndex = project.years.findIndex((y) => y.id === year);
+          let yearIndex = project.years.findIndex((y) => y.id === year.toString());
           if (yearIndex === -1) {
-            yearIndex = project.years?.unshift({ id: year, months: [] }) - 1;
+            yearIndex = project.years?.unshift({ id: year.toString(), months: [] }) - 1;
           }
 
           const monthIndex = project.years[yearIndex].months.findIndex(
@@ -789,11 +809,11 @@ export const projectsSlice = createSlice({
           };
         }
 
-        if (project.id === action.payload.original_message.chat.project.id) {
+        if (project.id === action.payload.original_message.chat?.project?.id) {
           return {
             ...project,
             chats: project.chats.map((chat) => {
-              if (chat.id === action.payload.original_message.chat.id) {
+              if (chat.id === action.payload.original_message.chat?.id) {
                 return {
                   ...chat,
                   messages: chat.messages
@@ -823,14 +843,14 @@ export const projectsSlice = createSlice({
     },
     fillMatchingProject(
       state,
-      action: PayloadAction<IProjectCurrent | null>,
+      action: PayloadAction<FillProjectMatchingActionPayload | null>,
     ) {
       state.matchingProject = action.payload;
     },
     prepareSuggestingQuestions(
       state,
       action: PayloadAction<{
-        chatId: number;
+        chatId: string;
       }>,
     ) {
       state.projects = state.projects.map((project) => ({
@@ -867,7 +887,7 @@ export const projectsSlice = createSlice({
     fillSuggestingQuestions(
       state,
       action: PayloadAction<{
-        chatId: number;
+        chatId: string;
         questions: string[];
       }>,
     ) {
@@ -905,9 +925,9 @@ export const projectsSlice = createSlice({
     removeImages(
       state,
       action: PayloadAction<{
-        imageId: number;
-        chatId: number;
-        messageId: number;
+        imageId: string;
+        chatId: string;
+        messageId: string;
       }>,
     ) {
       const { chatId, imageId, messageId } = action.payload;
@@ -961,8 +981,8 @@ export const projectsSlice = createSlice({
     fillChatFile(
       state,
       action: PayloadAction<{
-        data: IChatFile;
-        chatId: number;
+        data: FillAddChatFileActionPayload;
+        chatId: string;
       }>,
     ) {
       state.projects = state.projects.map((project) => {
@@ -987,7 +1007,7 @@ export const projectsSlice = createSlice({
     },
     removeChatFile(
       state,
-      action: PayloadAction<{ chatId: number; fileId: number }>,
+      action: PayloadAction<{ chatId: string; fileId: string }>,
     ) {
       state.projects = state.projects.map((project) => {
         return {

@@ -3,19 +3,24 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Box, useTheme } from "@mui/material";
 
+import ArrowDownward from "~/components/icons/ArrowDownward";
+import { ActivityTimeline } from "~/components/common/ActivityTimeline";
+import { IconButton } from "~/components/uiKit/IconButton";
+
 import { EmptyChat } from "~/segments/chat/EmptyChat";
 import { ChatInputButtons } from "~/segments/chat/ChatInputButtons";
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 import { useChatPage } from "~/segments/chat/view/ChatIndexView/useChatPage";
+import { MessagesList } from "~/segments/chat/MessagesList";
 
-import { getCurrentProject, getGuidanceQuestion } from "~/store/selectors/projects.selector";
+import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
+
+import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/selectors/projects.selector";
 import { projectsSlice } from "~/store/slices/projects.slice";
+import { modalSlice } from "~/store/slices/modal.slice";
+import { chatSlice } from "~/store/slices/chat.slice";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
-import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
-import {IconButton} from "~/components/uiKit/IconButton";
-import ArrowDownward from "~/components/icons/ArrowDownward";
-import {MessagesList} from "~/segments/chat/MessagesList";
 
 export const ChatIndexView: FC = () => {
   const theme = useTheme();
@@ -29,11 +34,20 @@ export const ChatIndexView: FC = () => {
   const [currentChatId, setCurrentChatId] = useState('');
   const refInput = useRef<HTMLDivElement>();
   const currentProject = useSelector(getCurrentProject(projectName));
+  const { currentYearId, currentMonthId, id } = useSelector(
+    getChatData(chatId),
+  );
   const { handle } = useTokensDisclaimer('questions');
 
   useEffect(() => {
     chatId && setCurrentChatId(chatId);
   }, [chatId, projectName]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(chatSlice.actions.setConvertedText(null));
+    };
+  }, []);
 
   const scrollToBottom = () => {
     const id = document.getElementById('anchor');
@@ -65,19 +79,19 @@ export const ChatIndexView: FC = () => {
   }, [refInput.current?.clientHeight]);
 
   const handleClick = (id: string) => {
-    // navigate(`${book.chat}/${currentProject?.name}/${id}`);
+    alert('handleClick: ' + id);
   };
 
   const handleAction = (chatId: string, name: string) => {
-    // dispatch(
-    //   modalActions.modal({
-    //     component: 'EditChat',
-    //     title: 'Chat Edit',
-    //     forceClose: true,
-    //     chatId,
-    //     projectName: name,
-    //   }),
-    // );
+    dispatch(
+      modalSlice.actions.modal({
+        component: 'EditChat',
+        title: 'Chat Edit',
+        forceClose: true,
+        chatId,
+        projectName: name,
+      })
+    );
   };
 
   useEffect(() => {
@@ -89,6 +103,18 @@ export const ChatIndexView: FC = () => {
   return (
     <Box sx={styles.root}>
       <Box sx={styles.head}>
+        <ActivityTimeline
+          list={currentProject?.years ?? []}
+          title={'Chat History'}
+          emptyStateTitle={`You haven't started any chats yet.`}
+          handleClick={handleClick}
+          currentChatId={id}
+          currentMonth={currentMonthId}
+          currentYear={currentYearId}
+          handleAction={handleAction}
+          createNewChat={handleCreateNewChat}
+          isCreateChat
+        />
       </Box>
 
       {
@@ -125,8 +151,8 @@ export const ChatIndexView: FC = () => {
         <ChatInputButtons
           currentChatId={currentChatId}
           value={value}
-          setValue={setValue}
           projectsMessages={projectsMessages}
+          setValue={setValue}
           sendMessage={sendMessage}
           scrollToBottom={scrollToBottom}
         />
