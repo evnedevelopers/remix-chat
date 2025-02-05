@@ -8,6 +8,5 @@ export default {
   // serverBuildPath: "build/index.js",
   serverDependenciesToBundle: [
     /^swiper/,
-  ],
-
+  ]
 };

@@ -91,7 +91,7 @@ export const projectsSlice = createSlice({
           years,
           // chats: project.chats.map((chat) => ({ ...chat, messages: null })),
         };
-      });
+      }) as any[];
     },
     clearProjects(state) {
       state.projects = [];

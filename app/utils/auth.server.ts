@@ -57,13 +57,13 @@ export async function authenticate(request: Request) {
 }
 
 export const login = ({
-  email,
+  username,
   password,
 }: {
-  email: string,
+  username: string,
   password: string
 }) => {
-  const user = users.find((user) => user.email === email);
+  const user = users.find((user) => user.email === username);
 
   if (!user || user.password !== password) {
     return json({ error: `Incorrect login` }, { status: 400 });

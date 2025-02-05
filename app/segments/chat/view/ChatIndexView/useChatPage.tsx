@@ -21,7 +21,7 @@ import {
 import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/selectors/ws.selector";
 import {
   getEmptyChat,
-  getIsProjectsFetching,
+  getIsProjectsFetching, getProjectId,
   // getProjectId,
   getProjectsMessages
 } from "~/store/selectors/projects.selector";
@@ -30,6 +30,7 @@ import { chatSlice } from "~/store/slices/chat.slice";
 import { getLoadingImageData } from "~/store/selectors/chat.selector";
 
 import { styles } from './styles';
+import { wsActions } from "~/store/saga/ws/actions";
 
 export const useChatPage = (
   value: string,
@@ -49,7 +50,7 @@ export const useChatPage = (
   const isClosedSockets = useSelector(getIsClosedSockets);
   const isProjectsFetching = useSelector(getIsProjectsFetching);
   const loadingImageData = useSelector(getLoadingImageData);
-  // const projectId = useSelector(getProjectId(projectName));
+  const projectId = useSelector(getProjectId(projectName));
   const currentDataset = useSelector(getCurrentDataset);
   const emptyChat = useSelector(getEmptyChat(currentDataset?.name ?? ''));
   const canDoAction = useSelector(getCanDoAction);
@@ -122,23 +123,23 @@ export const useChatPage = (
 
     const handleFile = isFileContext || file?.error ? undefined : file?.id;
 
-    // dispatch(
-    //   wsActions.sendMessageRequest({
-    //     values: {
-    //       action: 'request',
-    //       app: 'chat',
-    //       event: 'message',
-    //       data: {
-    //         query: question.split('\n').join('<br>'),
-    //         project_id: projectId,
-    //         chat_id: currentChatId,
-    //         continue: null,
-    //         dataset_matching: true,
-    //         file_id: handleFile,
-    //       },
-    //     },
-    //   }),
-    // );
+    dispatch(
+      wsActions.sendMessageRequest({
+        values: {
+          action: 'request',
+          app: 'chat',
+          event: 'message',
+          data: {
+            query: question.split('\n').join('<br>'),
+            project_id: projectId,
+            chat_id: currentChatId,
+            continue: null,
+            dataset_matching: true,
+            file_id: handleFile,
+          },
+        },
+      }),
+    );
     const newMessage = {
       id: 'mockHuman',
       text: question.split('\n').join('<br>'),
@@ -212,7 +213,6 @@ export const useChatPage = (
   const handleCreateNewChat = () => {
     if (emptyChat) {
       alert('emptyChat')
-      // navigate(`${book.chat}/${currentDataset?.name}/${emptyChat.id}`);
 
       return;
     }

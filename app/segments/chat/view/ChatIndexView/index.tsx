@@ -19,14 +19,16 @@ import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/sel
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { modalSlice } from "~/store/slices/modal.slice";
 import { chatSlice } from "~/store/slices/chat.slice";
+import { wsActions } from "~/store/saga/ws/actions";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
+import { AppDispatch } from "~/store";
 
 export const ChatIndexView: FC = () => {
   const theme = useTheme();
   const isLg = theme.breakpoints.down('lg');
   const { projectName, chatId } = useChatParams();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const guidanceQuestion = useSelector(getGuidanceQuestion);
   const [value, setValue] = useState('');
   const [size, setSize] = useState(0);
@@ -42,6 +44,10 @@ export const ChatIndexView: FC = () => {
   useEffect(() => {
     chatId && setCurrentChatId(chatId);
   }, [chatId, projectName]);
+
+  useEffect(() => {
+    dispatch(wsActions.joinChat(chatId));
+  }, [chatId, dispatch]);
 
   useEffect(() => {
     return () => {

@@ -1,11 +1,6 @@
 import { useLoaderData } from "@remix-run/react";
 
-import {
-  useSnackbar,
-  OptionsWithExtraProps,
-  VariantType,
-  closeSnackbar,
-} from 'notistack';
+import * as notistack from 'notistack';
 
 import { useTheme } from '@mui/material';
 
@@ -64,8 +59,8 @@ const getSettingsItem = (setting: Setting): boolean => {
 export const useTokensDisclaimer = (type: Setting) => {
   const theme = useTheme();
   const { authUser: profile } = useLoaderData<ILoaderFunctionResult>();
-  const { enqueueSnackbar } = useSnackbar();
-  const snackbarOptions: OptionsWithExtraProps<VariantType> = {
+  const { enqueueSnackbar } = notistack.useSnackbar();
+  const snackbarOptions: notistack.OptionsWithExtraProps<notistack.VariantType> = {
     variant: 'infoSnackbar',
     autoHideDuration: 10000,
     preventDuplicate: true,
@@ -73,7 +68,7 @@ export const useTokensDisclaimer = (type: Setting) => {
       <Close
         fontSize={'small'}
         htmlColor={theme.palette.common.surface['surface 5']}
-        onClick={() => closeSnackbar(id)}
+        onClick={() => notistack.closeSnackbar(id)}
         sx={{ cursor: 'pointer' }}
       />
     ),

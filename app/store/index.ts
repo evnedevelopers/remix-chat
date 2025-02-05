@@ -1,4 +1,6 @@
+import createSagaMiddleware from "@redux-saga/core";
 import { configureStore } from "@reduxjs/toolkit";
+import { ThunkAction, ThunkDispatch } from "@reduxjs/toolkit";
 
 import { wsSlice } from "~/store/slices/ws.slice";
 import { projectsSlice } from "~/store/slices/projects.slice";
@@ -8,6 +10,11 @@ import { chatSlice } from "~/store/slices/chat.slice";
 import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
 import { uiSlice } from "~/store/slices/ui.slice";
 import { settingsSlice } from "~/store/slices/settings.slice";
+import { rootSaga } from './rootSaga';
+
+import { socketMiddleware } from "~/store/middlewares/socketMiddleware";
+
+const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
   reducer: {
@@ -19,12 +26,22 @@ const store = configureStore({
     [projectsSlice.name]: projectsSlice.reducer,
     [savedMessagesSlice.name]: savedMessagesSlice.reducer,
     [profileSlice.name]: profileSlice.reducer,
-  }
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware)
 });
+
+sagaMiddleware.run(rootSaga);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;
+export type RootStore = typeof store;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  any
+>;
 
 export default store;
