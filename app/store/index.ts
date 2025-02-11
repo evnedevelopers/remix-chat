@@ -1,6 +1,6 @@
 import createSagaMiddleware from "@redux-saga/core";
 import { configureStore } from "@reduxjs/toolkit";
-import { ThunkAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { ThunkAction } from "@reduxjs/toolkit";
 
 import { wsSlice } from "~/store/slices/ws.slice";
 import { projectsSlice } from "~/store/slices/projects.slice";
@@ -10,9 +10,8 @@ import { chatSlice } from "~/store/slices/chat.slice";
 import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
 import { uiSlice } from "~/store/slices/ui.slice";
 import { settingsSlice } from "~/store/slices/settings.slice";
+import { aiConversationSlice } from "~/store/slices/aiConversation.slice";
 import { rootSaga } from './rootSaga';
-
-import { socketMiddleware } from "~/store/middlewares/socketMiddleware";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -26,6 +25,7 @@ const store = configureStore({
     [projectsSlice.name]: projectsSlice.reducer,
     [savedMessagesSlice.name]: savedMessagesSlice.reducer,
     [profileSlice.name]: profileSlice.reducer,
+    [aiConversationSlice.name]: aiConversationSlice.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware)
 });

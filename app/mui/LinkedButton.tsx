@@ -1,6 +1,5 @@
 import { Link } from "@remix-run/react";
 import { Button as MuiButton } from "@mui/material";
-import * as React from "react";
 import type { ButtonProps as MuiButtonProps } from "@mui/material/Button/Button";
 import { RemixLinkProps } from "@remix-run/react/dist/components";
 

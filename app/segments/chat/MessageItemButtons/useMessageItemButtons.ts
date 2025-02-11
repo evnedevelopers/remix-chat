@@ -13,6 +13,8 @@ import {
 } from "~/store/selectors/profile.selector";
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { modalSlice } from "~/store/slices/modal.slice";
+import { wsActions } from "~/store/saga/ws/actions";
+import { projectsActions } from "~/store/saga/projects/actions";
 
 import { IMessage, SubPlansCode } from "~/utils/typedefs";
 
@@ -40,13 +42,13 @@ export const useMessageItemButtons = (
     }
     if (!messageItem.audio) {
       new Promise((resolve, reject) => {
-        // dispatch(
-        //   projectsActions.fetchMessageAudio({
-        //     values: { messageId: messageItem.id },
-        //     resolve,
-        //     reject,
-        //   }),
-        // );
+        dispatch(
+          projectsActions.fetchMessageAudio({
+            values: { messageId: messageItem.id },
+            resolve,
+            reject,
+          }),
+        );
       })
         .then(() => {
           setIsPlaying(true);
@@ -86,20 +88,20 @@ export const useMessageItemButtons = (
 
     if (limit > 0 || enoughTokens) {
       handle();
-      // dispatch(
-      //   wsActions.sendMessageRequest({
-      //     values: {
-      //       action: 'request',
-      //       app: 'chat',
-      //       event: 'visualize',
-      //       data: {
-      //         project_id: projectId,
-      //         chat_id: chatId,
-      //         message_id: messageItem.id,
-      //       },
-      //     },
-      //   }),
-      // );
+      dispatch(
+        wsActions.sendMessageRequest({
+          values: {
+            action: 'request',
+            app: 'chat',
+            event: 'visualize',
+            data: {
+              project_id: projectId,
+              chat_id: chatId,
+              message_id: messageItem.id,
+            },
+          },
+        }),
+      );
     } else {
       if (profile?.subscription?.visualize_limits === 0 && !enoughTokens) {
         dispatch(

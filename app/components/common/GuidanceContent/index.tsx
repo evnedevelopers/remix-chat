@@ -11,8 +11,10 @@ import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams"
 import { getProjectId } from "~/store/selectors/projects.selector";
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { uiSlice } from "~/store/slices/ui.slice";
+import { projectsActions } from "~/store/saga/projects/actions";
 
 import { styles } from './styles';
+import {AppDispatch} from "~/store";
 
 type GuidanceContentProps = {
   title: string;
@@ -37,20 +39,20 @@ export const GuidanceContent: FC<GuidanceContentProps> = ({
 }) => {
   const theme = useTheme();
   const { projectName } = useChatParams();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const isLg = useMediaQuery(theme.breakpoints.down('lg'));
   const projectId = useSelector(getProjectId(projectName));
 
   const handleClick = () => {
-    // !isSubGuide &&
-    // !isRead &&
-    // dispatch(
-    //   projectsActions.readGuidance({
-    //     guidance_id,
-    //     subguidance_id: subguidance_id ?? null,
-    //     projectId,
-    //   }),
-    // );
+    !isSubGuide &&
+    !isRead &&
+    dispatch(
+      projectsActions.readGuidance({
+        guidance_id,
+        subguidance_id: subguidance_id ?? null,
+        projectId,
+      }),
+    );
     !isSubGuide && dispatch(projectsSlice.actions.fillGuidanceQuestion(text));
     !isSubGuide &&
     isLg &&

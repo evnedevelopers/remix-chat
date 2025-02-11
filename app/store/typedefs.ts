@@ -56,6 +56,45 @@ export interface IScrollToLoadingImageId {
   chatId: string;
   projectId: string;
 }
+
+export interface ISession {
+  id: string;
+  months: ISessionMonth[];
+}
+export interface ISessionMonth {
+  id: string;
+  is_live?: boolean;
+  is_next_session?: boolean;
+  sessions: ISessionItem[];
+}
+
+export interface ISessionItem {
+  end_at: string;
+  id: number | string;
+  start_at: string;
+  messages: IMessagesPagination | null;
+  nextSession?: boolean;
+  is_completed: boolean;
+  project_description: string;
+}
+
+export interface ISessionNextItem {
+  end_at: string;
+  id: number;
+  start_at: string;
+  is_completed?: boolean | null;
+  detail?: string;
+  nextSession?: boolean;
+  project_description: string;
+}
+
+export interface IMessagesPagination {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: IMessage[];
+}
+
 export type FillChatsActionPayload = IChat[];
 
 export type FillProfileActionPayload = IUser;
@@ -118,6 +157,23 @@ export type FillSavedMessagesActionPayload = ISavedProjects[];
 export type PushMoreSavedMessagesActionPayload = ISavedMessages;
 
 export type FillThemeActionPayload = ThemeVariant;
+
+export type PushMoreMessagesActionPayload = IMessages;
+
+export type FillNextSessionActionPayload = ISessionNextItem;
+export type FillSessionsActionPayload = ISessionItem[];
+export type FillGuidanceActionPayload = {
+  detail: string;
+  guidance: IGuidance;
+};
+export type ServerFormErrors = {
+  error: { details: { [key: string]: string[] } };
+};
+
+export type FormErrors = {
+  [key: string]: any;
+};
+
 
 //common types__________________________________
 export enum ThemeVariant {

@@ -18,6 +18,10 @@ import {
 } from "~/store/selectors/profile.selector";
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { chatSlice } from "~/store/slices/chat.slice";
+import { wsActions } from "~/store/saga/ws/actions";
+import { projectsActions } from "~/store/saga/projects/actions";
+import { profileSlice } from "~/store/slices/profile.slice";
+import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
 
@@ -41,7 +45,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   setValue,
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [lastQuestion, setLastQuestion] = useState('');
   const project = useSelector(getCurrentProject(matchingProject?.name));
   const canDoAction = useSelector(getCanDoAction);
@@ -61,28 +65,28 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   }, [projectsMessages.length]);
 
   const handleSendMessage = (
-    chatId: number,
-    projectId: number,
+    chatId: string,
+    projectId: string,
     projectsMessages: IMessage[],
     matching: boolean,
   ) => {
     dispatch(projectsSlice.actions.fillMatchingProject(null));
-    // dispatch(
-    //   wsActions.sendMessageRequest({
-    //     values: {
-    //       action: 'request',
-    //       app: 'chat',
-    //       event: 'message',
-    //       data: {
-    //         query: (value || lastQuestion).split('\n').join('<br>'),
-    //         project_id: projectId,
-    //         chat_id: chatId,
-    //         dataset_matching: matching,
-    //         continue: null,
-    //       },
-    //     },
-    //   }),
-    // );
+    dispatch(
+      wsActions.sendMessageRequest({
+        values: {
+          action: 'request',
+          app: 'chat',
+          event: 'message',
+          data: {
+            query: (value || lastQuestion).split('\n').join('<br>'),
+            project_id: projectId,
+            chat_id: chatId,
+            dataset_matching: matching,
+            continue: null,
+          },
+        },
+      }),
+    );
     const newMessage = {
       id: 'mockHuman',
       text: (value || lastQuestion).split('\n').join('<br>'),
@@ -114,20 +118,22 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
     );
     dispatch(chatSlice.actions.setMessageId('mock'));
     setValue('');
-    // new Promise((resolve, reject) => {
-    //   dispatch(
-    //     projectsActions.updateChat({
-    //       values: {
-    //         id: currentChatId,
-    //         waiting_user_response: false,
-    //       },
-    //       resolve,
-    //       reject,
-    //     }),
-    //   );
-    // })
-    //   .then()
-    //   .catch();
+    new Promise((resolve, reject) => {
+      dispatch(
+        projectsActions.updateChat({
+          payload: {
+            id: currentChatId,
+            waiting_user_response: false,
+          },
+          meta: {
+            resolve,
+            reject,
+          }
+        }),
+      );
+    })
+      .then()
+      .catch();
   };
 
   const createNewChat = () => {
@@ -137,26 +143,24 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       return;
     }
 
-    // new Promise((resolve, reject) => {
-    //   dispatch(
-    //     projectsActions.createNewChat({
-    //       values: {
-    //         project_id: matchingProject?.id,
-    //         projectName: matchingProject?.name,
-    //         name: 'New Chat',
-    //       },
-    //       resolve,
-    //       reject,
-    //       navigate,
-    //     }),
-    //   );
-    // })
-    //   .then((data: any) => {
-    //     navigate(`${book.chat}/${matchingProject?.name}/${data.id}`);
-    //     handleSendMessage(data.id, matchingProject?.id, [], true);
-    //     dispatch(profileActions.setCurrentDataset(project));
-    //   })
-    //   .catch();
+    new Promise((resolve, reject) => {
+      dispatch(
+        projectsActions.createNewChat({
+          payload: {
+            project_id: matchingProject?.id,
+            projectName: matchingProject?.name,
+            name: 'New Chat',
+          },
+          meta: { resolve, reject }
+        })
+      );
+    })
+      .then((data: any) => {
+        // navigate(`${book.chat}/${matchingProject?.name}/${data.id}`);
+        handleSendMessage(data.id, matchingProject?.id, [], true);
+        dispatch(profileSlice.actions.setCurrentDataset(project));
+      })
+      .catch();
   };
 
   const continueSibyl = () => {
@@ -197,11 +201,11 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
             mr={'16px'}>
             Ask Sibyl
           </Typography>
-          {/*<IconContainer*/}
-          {/*  darkIcon={SibylDark}*/}
-          {/*  lightIcon={SibylLight}*/}
-          {/*  size={24}*/}
-          {/*/>*/}
+          <IconContainer
+            darkIcon={'/assets/darkLogo.png'}
+            lightIcon={'/assets/lightLogo.png'}
+            size={24}
+          />
         </Button>
         <Button
           variant={'primary'}

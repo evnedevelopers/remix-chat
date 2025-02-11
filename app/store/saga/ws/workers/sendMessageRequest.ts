@@ -4,8 +4,8 @@ import { put } from 'redux-saga/effects';
 
 import { wsSlice } from "~/store/slices/ws.slice";
 import { chatSlice } from "~/store/slices/chat.slice";
-import { handleErrors } from "~/helpers/handleErrors";
 import { wsActions } from "~/store/saga/ws/actions";
+import { handleError } from "~/store/saga/ui/workers/handleError";
 
 export function* sendMessageRequest({
   payload,
@@ -29,7 +29,7 @@ export function* sendMessageRequest({
       resolve();
     }
   } catch (e) {
-    yield handleErrors(e);
+    yield handleError(e);
   } finally {
     yield effects.put(wsSlice.actions.stopFetching());
   }

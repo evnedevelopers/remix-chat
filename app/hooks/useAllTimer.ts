@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
+import { settingsActions } from "~/store/saga/settings/actions";
+import { AppDispatch } from "~/store";
 
 export const useAllTimer = (
   allowCountdown: boolean,
   timer: number,
   sagaAction: ActionCreatorWithPayload<boolean>,
 ) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [count, setCount] = useState<number>(0);
   const [zero, setZero] = useState<boolean>(false);
 
@@ -53,7 +55,7 @@ export const useAllTimer = (
 
   useEffect(() => {
     if (count === 0) {
-      // dispatch(settingsActions.fetchSettings());
+      dispatch(settingsActions.fetchSettings());
     }
     setZero(count === 0);
   }, [count]);

@@ -1,11 +1,14 @@
 import { FC, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { isIOS } from 'react-device-detect';
 
 import { MessageItem } from "~/segments/chat/MessageItem";
 
 import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/selectors/chat.selector";
 import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/selectors/ui.selector";
+import { uiSlice } from "~/store/slices/ui.slice";
+import { projectsActions } from "~/store/saga/projects/actions";
+import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
 
@@ -35,7 +38,7 @@ export const Messenger: FC<MessengerProps> = ({
   const oneTimeSpeaking = useSelector(getIsOneTimeSpeaking);
   const globalMessageId = useSelector(getGlobalMessageId);
   const [isPlaying, setIsPlaying] = useState(false);
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const isTyping = useSelector(getIsChatTyping);
 
   const handleAudioPlay = (audio: boolean) => {
@@ -57,18 +60,17 @@ export const Messenger: FC<MessengerProps> = ({
       !isTyping
     ) {
       new Promise((resolve, reject) => {
-        // dispatch(
-          // projectsActions.fetchMessageAudio({
-          //   values: { messageId: globalMessageId },
-          //   resolve,
-          //   reject,
-          // }),
-        // );
+        dispatch(
+          projectsActions.fetchMessageAudio({
+            payload: { messageId: globalMessageId },
+            meta: { resolve, reject },
+          }),
+        );
       })
         .then(() => {
           setIsPlaying(true);
           setAudioPlayingId(globalMessageId);
-          // dispatch(uiActions.stopOneTimeSpeaking());
+          dispatch(uiSlice.actions.stopOneTimeSpeaking());
         })
         .catch((error) => {
           return error;

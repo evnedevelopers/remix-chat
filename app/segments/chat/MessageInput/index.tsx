@@ -16,6 +16,8 @@ import { useMessageInput } from "~/segments/chat/MessageInput/useMessageInput";
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 import { useAudioRecorder } from "~/segments/chat/MessageInput/useAudioRecorder";
 import { DotsAnimation } from "~/segments/chat/DotsAnimation";
+import { MessageInputFileButton } from "~/segments/chat/MessageInputFileButton";
+import { MessageInputAudioButton } from "~/segments/chat/MessageInputAudioButton";
 
 import { getCurrentFile, getIsFileFetching } from "~/store/selectors/projects.selector";
 import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/selectors/chat.selector";
@@ -24,8 +26,6 @@ import { getProfile } from "~/store/selectors/profile.selector";
 import { IChatFile } from "~/utils/typedefs";
 
 import { styles } from './styles';
-import { MessageInputFileButton } from "~/segments/chat/MessageInputFileButton";
-import { MessageInputAudioButton } from "~/segments/chat/MessageInputAudioButton";
 
 type MessageInputProps = {
   value: string;

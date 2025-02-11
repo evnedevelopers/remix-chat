@@ -9,6 +9,10 @@ import { Messenger } from "~/segments/chat/Messenger";
 import { getNewestMessageId, getOldestMessageId, getProjectId } from "~/store/selectors/projects.selector";
 import { getScrollToMessageId } from "~/store/selectors/saved-messages.selector";
 import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
+import { settingsActions } from "~/store/saga/settings/actions";
+import { chatActions } from "~/store/saga/chat/actions";
+import { getIsAiConversationFetching } from "~/store/selectors/aiConversation.selector";
+import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
 
@@ -40,7 +44,8 @@ export const MessagesList: FC<MessagesListProps> = ({
   const oldestId = useSelector(getOldestMessageId(chatId, projectName));
   const newestId = useSelector(getNewestMessageId(chatId, projectName));
   const mainProjectId = useSelector(getProjectId(projectName));
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const isFetching = useSelector(getIsAiConversationFetching);
   const [totalScrollHeight, setTotalScrollHeight] = useState(0);
   const scrollToMessageId = useSelector(getScrollToMessageId);
   const [audioLoadingId, setAudioLoadingId] = useState<string>('');
@@ -74,33 +79,30 @@ export const MessagesList: FC<MessagesListProps> = ({
     const bottom =
       Math.floor(clientHeight) >= Math.floor(scrollHeight - scrollTop);
     if (bottom) {
-    //   dispatch(settingsActions.fetchSettings());
-    //   !isFetching &&
-    //   chatId &&
-    //   typeof oldestId === 'string' &&
-    //   dispatch(
-    //     chatActions.loadMoreMessages({
-    //       url: `${process.env.REACT_APP_API_URL}/chats/${chatId}/messages?lt_id=${oldestId}`,
-    //       chatId: +chatId,
-    //       isNext: true,
-    //     }),
-    //   );
-    //
+      dispatch(settingsActions.fetchSettings());
+      !isFetching &&
+      chatId &&
+      typeof oldestId === 'string' &&
+      dispatch(
+        chatActions.loadMoreMessages({
+          url: `/chats/${chatId}/messages?lt_id=${oldestId}`,
+          chatId,
+          isNext: true,
+          isPrev: false
+        }),
+      );
       return;
     }
     if (scrollTop === 0) {
       if (chatId && typeof newestId === 'string') {
-        return new Promise((resolve, reject) => {
-          // dispatch(
-          //   chatActions.loadPrevMessages({
-          //     values: {
-          //       url: `${process.env.REACT_APP_API_URL}/chats/${chatId}/messages?mt_id=${newestId}`,
-          //       chatId: +chatId,
-          //     },
-          //     resolve,
-          //     reject,
-          //   }),
-          // );
+        return new Promise((resolve) => {
+          dispatch(
+            chatActions.loadPrevMessages({
+              url: `/chats/${chatId}/messages?mt_id=${newestId}`,
+              chatId,
+              resolve,
+            }),
+          );
         })
           .then(() => {
             ref.current?.scrollTo({

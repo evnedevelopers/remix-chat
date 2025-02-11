@@ -1,7 +1,7 @@
 import { users } from "~/utils/mocks/users";
 import { json, createCookieSessionStorage, redirect } from '@remix-run/node'
 import * as process from "node:process";
-import {findUserProfile} from "~/utils/profile.server";
+import { findUserProfile } from "~/utils/profile.server";
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {

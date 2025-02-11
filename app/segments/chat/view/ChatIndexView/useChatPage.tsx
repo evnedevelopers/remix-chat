@@ -21,16 +21,19 @@ import {
 import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/selectors/ws.selector";
 import {
   getEmptyChat,
-  getIsProjectsFetching, getProjectId,
-  // getProjectId,
+  getIsProjectsFetching,
+  getProjectId,
   getProjectsMessages
 } from "~/store/selectors/projects.selector";
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { chatSlice } from "~/store/slices/chat.slice";
+import { wsActions } from "~/store/saga/ws/actions";
 import { getLoadingImageData } from "~/store/selectors/chat.selector";
+import { projectsActions } from "~/store/saga/projects/actions";
+import { AppDispatch } from "~/store";
+import { chatActions } from "~/store/saga/chat/actions";
 
 import { styles } from './styles';
-import { wsActions } from "~/store/saga/ws/actions";
 
 export const useChatPage = (
   value: string,
@@ -43,7 +46,7 @@ export const useChatPage = (
   const projectsMessages = useSelector(
     getProjectsMessages(chatId, projectName),
   );
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { enqueueSnackbar } = useSnackbar();
   const socketStatus = useSelector(getSocketOpened);
   const isOpenedSockets = useSelector(getIsOpenedSockets);
@@ -66,7 +69,7 @@ export const useChatPage = (
 
   useEffect(() => {
     if (!isProjectsFetching && projectsMessages === null) {
-      // dispatch(chatSlice.actions.fetchMessages(chatId ? chatId : '0'));
+      dispatch(chatActions.fetchMessages(chatId ? chatId : '0'));
     }
   }, [chatId, isProjectsFetching]);
 
@@ -223,24 +226,23 @@ export const useChatPage = (
       return;
     }
 
-    // new Promise((resolve, reject) => {
-    //   dispatch(
-    //     projectsActions.createNewChat({
-    //       values: {
-    //         project_id: currentDataset?.id,
-    //         projectName: currentDataset?.name,
-    //         name: 'New Chat',
-    //       },
-    //       resolve,
-    //       reject,
-    //       navigate,
-    //     }),
-    //   );
-    // })
-    //   .then((data: any) => {
-    //     navigate(`${book.chat}/${currentDataset?.name}/${data.id}`);
-    //   })
-    //   .catch();
+    new Promise((resolve, reject) => {
+      dispatch(
+        projectsActions.createNewChat({
+          payload: {
+            project_id: currentDataset?.id,
+            projectName: currentDataset?.name,
+            name: 'New Chat',
+          },
+          meta: { resolve, reject }
+        }),
+      );
+    })
+      .then((data: any) => {
+        alert("chat has been created");
+        console.log(data);
+      })
+      .catch();
   };
 
   return {

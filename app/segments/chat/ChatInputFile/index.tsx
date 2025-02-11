@@ -11,8 +11,9 @@ import Close from "~/components/icons/Close";
 import AttachFile from "~/components/icons/AttachFile";
 import { IconButton } from "~/components/uiKit/IconButton";
 
-
+import { projectsActions } from "~/store/saga/projects/actions";
 import { getCurrentFile } from "~/store/selectors/projects.selector";
+import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
@@ -20,28 +21,27 @@ type ChatInputFileProps = {};
 
 export const ChatInputFile: FC<ChatInputFileProps> = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { projectName, chatId } = useParams();
   const { file } = useSelector(getCurrentFile(chatId, projectName));
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDeleteFile = () => {
-    // new Promise((resolve, reject) => {
-    //   dispatch(
-    //     projectsActions.deleteChatFile({
-    //       values: {
-    //         fileId: file?.id,
-    //         chatId: chatId ? +chatId : 0,
-    //       },
-    //       resolve,
-    //       reject,
-    //     }),
-    //   );
-    // })
-    //   .then(() => {
-    //     enqueueSnackbar('The file was deleted', { variant: 'infoSnackbar' });
-    //   })
-    //   .catch();
+    new Promise((resolve, reject) => {
+      dispatch(
+        projectsActions.deleteChatFile({
+          payload: {
+            fileId: file?.id,
+            chatId: chatId ? chatId : '',
+          },
+          meta: { resolve, reject }
+        }),
+      );
+    })
+      .then(() => {
+        enqueueSnackbar('The file was deleted', { variant: 'infoSnackbar' });
+      })
+      .catch();
   };
 
   return (

@@ -1,7 +1,9 @@
-import { styles } from './styles';
+import { FC } from "react";
 
 import { Box, useTheme } from '@mui/material';
 import { keyframes } from '@emotion/react';
+
+import { styles } from './styles';
 
 type DotsAnimationProps = {};
 

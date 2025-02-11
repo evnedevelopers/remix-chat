@@ -18,6 +18,9 @@ import { copyText } from "~/helpers/copyText";
 import { getProjectId } from "~/store/selectors/projects.selector";
 import { chatSlice } from "~/store/slices/chat.slice";
 import { modalSlice } from "~/store/slices/modal.slice";
+import { projectsActions } from "~/store/saga/projects/actions";
+import { savedMessagesActions } from "~/store/saga/savedMessages/actions";
+import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
@@ -44,7 +47,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
   setIsOpen,
   isOpen,
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const { projectName } = useParams();
@@ -65,7 +68,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
     };
 
     return new Promise((resolve, reject) => {
-      // dispatch(projectsActions.postRate({ values, resolve, reject }));
+      dispatch(projectsActions.postRate({ payload: values, meta: { resolve, reject } }));
     })
       .then(() => {
         setIsOpen(false);
@@ -89,15 +92,14 @@ export const MessageActions: FC<MessageActionsProps> = ({
           forceClose: false,
           onCancel: () => {
             dispatch(modalSlice.actions.closeModal('ConfirmOrCancel'));
-            // dispatch(
-            //   savedMessagesActions.deleteSavedMessage({
-            //     values: {
-            //       message_id: id,
-            //       project,
-            //     },
-            //     navigate,
-            //   }),
-            // );
+            dispatch(
+              savedMessagesActions.deleteSavedMessage({
+                payload: {
+                  message_id: id,
+                  project,
+                },
+              }),
+            );
             enqueueSnackbar(`The message was unsaved`, {
               variant: 'infoSnackbar',
             });
@@ -118,13 +120,12 @@ export const MessageActions: FC<MessageActionsProps> = ({
       );
     } else {
       return new Promise((resolve, reject) => {
-        // dispatch(
-        //   savedMessagesActions.saveMessage({
-        //     values: { message_id: id, project },
-        //     resolve,
-        //     reject,
-        //   }),
-        // );
+        dispatch(
+          savedMessagesActions.saveMessage({
+            payload: { message_id: id, project },
+            meta: { resolve, reject }
+          }),
+        );
       })
         .then(() => {
           setIsOpen(false);

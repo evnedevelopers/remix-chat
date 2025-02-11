@@ -31,6 +31,7 @@ import { getIsChatTyping } from "~/store/selectors/chat.selector";
 import { getIsGlobalSpeaking } from "~/store/selectors/ui.selector";
 import { chatSlice } from "~/store/slices/chat.slice";
 import { projectsSlice } from "~/store/slices/projects.slice";
+import { wsActions } from "~/store/saga/ws/actions";
 
 import { styles } from './styles';
 
@@ -72,6 +73,7 @@ export const MessageItem: FC<MessageItemProps> = ({
   setAudioLoadingId,
   messageItem,
   sendMessage,
+  lastHumanMessage
 }) => {
   const theme = useTheme();
   const isTyping = useSelector(getIsChatTyping);
@@ -98,22 +100,22 @@ export const MessageItem: FC<MessageItemProps> = ({
   const handleResendRequest = () => {
     dispatch(chatSlice.actions.setMessageId(id));
     dispatch(projectsSlice.actions.updateErrorMessage({ id, chatId: chatId || undefined }));
-    // dispatch(
-    //   wsActions.sendMessageRequest({
-    //     values: {
-    //       action: 'request',
-    //       app: 'chat',
-    //       event: 'message',
-    //       data: {
-    //         query: lastHumanMessage,
-    //         project_id: projectId,
-    //         continue: null,
-    //         chat_id: chatId,
-    //         dataset_matching: true,
-    //       },
-    //     },
-    //   }),
-    // );
+    dispatch(
+      wsActions.sendMessageRequest({
+        values: {
+          action: 'request',
+          app: 'chat',
+          event: 'message',
+          data: {
+            query: lastHumanMessage,
+            project_id: projectId,
+            continue: null,
+            chat_id: chatId,
+            dataset_matching: true,
+          },
+        },
+      }),
+    );
   };
 
   const handleContinueRequest = () => {
@@ -125,21 +127,21 @@ export const MessageItem: FC<MessageItemProps> = ({
       return;
     }
 
-    // dispatch(
-    //   wsActions.sendMessageRequest({
-    //     values: {
-    //       action: 'request',
-    //       app: 'chat',
-    //       event: 'message_continue',
-    //       data: {
-    //         project_id: messageItem.project.id,
-    //         chat_id: chatId,
-    //         message_id: id,
-    //         last_token_index: messageItem.tokenIndex,
-    //       },
-    //     },
-    //   }),
-    // );
+    dispatch(
+      wsActions.sendMessageRequest({
+        values: {
+          action: 'request',
+          app: 'chat',
+          event: 'message_continue',
+          data: {
+            project_id: messageItem.project?.id,
+            chat_id: chatId,
+            message_id: id,
+            last_token_index: messageItem.tokenIndex,
+          },
+        },
+      }),
+    );
   };
 
   useEffect(() => {
