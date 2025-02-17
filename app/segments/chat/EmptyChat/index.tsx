@@ -5,7 +5,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 
 import Chat2 from '~/components/icons/Chat2';
 
-import { getCurrentDescription } from "~/store/selectors/projects.selector";
+import { getCurrentDescription } from "~/store/selectors/projects.selectors";
 
 import { styles } from './styles';
 

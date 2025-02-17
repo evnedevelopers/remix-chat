@@ -7,7 +7,7 @@ import { Box, Skeleton, Typography } from "@mui/material";
 
 import { Grid } from "~/components/common/Grid";
 
-import { getIsChatTyping } from "~/store/selectors/chat.selector";
+import { getIsChatTyping } from "~/store/selectors/chat.selectors";
 import { ISuggestingQuestions } from "~/store/typedefs";
 
 import { styles } from './styles';

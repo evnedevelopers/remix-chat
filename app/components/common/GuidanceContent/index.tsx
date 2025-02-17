@@ -8,13 +8,12 @@ import AddCircleOutline from "~/components/icons/AddCircleOutline";
 
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 
-import { getProjectId } from "~/store/selectors/projects.selector";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { uiSlice } from "~/store/slices/ui.slice";
-import { projectsActions } from "~/store/saga/projects/actions";
+import { getProjectId } from "~/store/selectors/projects.selectors";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { uiActions } from "~/store/actions/ui.actions";
+import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
-import {AppDispatch} from "~/store";
 
 type GuidanceContentProps = {
   title: string;
@@ -35,7 +34,6 @@ export const GuidanceContent: FC<GuidanceContentProps> = ({
   isSideBar,
   guidance_id,
   subguidance_id,
-  isSubItem = false,
 }) => {
   const theme = useTheme();
   const { projectName } = useChatParams();
@@ -53,11 +51,11 @@ export const GuidanceContent: FC<GuidanceContentProps> = ({
         projectId,
       }),
     );
-    !isSubGuide && dispatch(projectsSlice.actions.fillGuidanceQuestion(text));
+    !isSubGuide && dispatch(projectsActions.fillGuidanceQuestion(text));
     !isSubGuide &&
     isLg &&
     isSideBar &&
-    dispatch(uiSlice.actions.toggleSidebarDescription());
+    dispatch(uiActions.toggleSidebarDescription());
   };
 
   return (

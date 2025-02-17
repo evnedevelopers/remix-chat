@@ -4,10 +4,10 @@ import { isIOS } from 'react-device-detect';
 
 import { MessageItem } from "~/segments/chat/MessageItem";
 
-import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/selectors/chat.selector";
-import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/selectors/ui.selector";
-import { uiSlice } from "~/store/slices/ui.slice";
-import { projectsActions } from "~/store/saga/projects/actions";
+import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/selectors/chat.selectors";
+import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/selectors/ui.selectors";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { uiActions } from "~/store/actions/ui.actions";
 import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
@@ -70,7 +70,7 @@ export const Messenger: FC<MessengerProps> = ({
         .then(() => {
           setIsPlaying(true);
           setAudioPlayingId(globalMessageId);
-          dispatch(uiSlice.actions.stopOneTimeSpeaking());
+          dispatch(uiActions.stopOneTimeSpeaking());
         })
         .catch((error) => {
           return error;

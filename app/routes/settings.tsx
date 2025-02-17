@@ -1,15 +1,16 @@
 import { json, LoaderFunction } from "@remix-run/node";
-import { getAuthUser } from "~/utils/auth.server";
+import { RouteAction } from "../../server/route-actions/route-action";
+import { isAuthenticateMiddleware } from "../../server/middlewares/is-authenticate.middleware";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = getAuthUser(request);
-
-  if (!user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  return json({
-    audio_recording_limit: 1000,
-    time_left_to_visualize: 1000,
+export const loader: LoaderFunction = new RouteAction()
+  .addMethod({
+    method: 'get',
+    middlewares: [isAuthenticateMiddleware],
+    actionFunction: async () => {
+      return json({
+        audio_recording_limit: 1000,
+        time_left_to_visualize: 1000,
+      })
+    }
   })
-}
+  .make();

@@ -1,9 +1,5 @@
-import { all, call } from 'redux-saga/effects';
-
-import { watchWs as wsSaga } from './saga/ws/watchers';
+import { all } from 'redux-saga/effects';
 
 export function* rootSaga() {
-  yield all([
-    call(wsSaga),
-  ])
+  yield all([])
 }

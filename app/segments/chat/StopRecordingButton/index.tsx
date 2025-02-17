@@ -7,9 +7,9 @@ import Stop from "~/components/icons/Stop";
 
 import { useAllTimer } from "~/hooks/useAllTimer";
 
-import { getAllowCountdown } from "~/store/selectors/chat.selector";
-import { getAudioTimer } from "~/store/selectors/settings.selector";
-import { chatSlice } from "~/store/slices/chat.slice";
+import { getAllowCountdown } from "~/store/selectors/chat.selectors";
+import { getAudioTimer } from "~/store/selectors/settings.selectors";
+import { chatActions } from "~/store/actions/chat.actions";
 
 import { styles } from './styles';
 
@@ -27,7 +27,7 @@ export const StopRecordingButton: FC<StopRecordingButtonProps> = ({
   const { timer } = useAllTimer(
     allowCountdown,
     audioTimer,
-    chatSlice.actions.allowCountdown,
+    chatActions.allowCountdown,
   );
 
   const stopRecording = () => {

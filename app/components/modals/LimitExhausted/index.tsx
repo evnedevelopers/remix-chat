@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Box, Button, Typography } from "@mui/material";
 
 import { ModalTypes } from "~/store/types";
-import { getProfile, getSubscriptionCoupon } from "~/store/selectors/profile.selector";
+import { getProfile, getSubscriptionCoupon } from "~/store/selectors/profile.selectors";
 
 import { styles } from './styles';
 

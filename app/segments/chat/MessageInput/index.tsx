@@ -19,9 +19,9 @@ import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { MessageInputFileButton } from "~/segments/chat/MessageInputFileButton";
 import { MessageInputAudioButton } from "~/segments/chat/MessageInputAudioButton";
 
-import { getCurrentFile, getIsFileFetching } from "~/store/selectors/projects.selector";
-import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/selectors/chat.selector";
-import { getProfile } from "~/store/selectors/profile.selector";
+import { getCurrentFile, getIsFileFetching } from "~/store/selectors/projects.selectors";
+import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/selectors/chat.selectors";
+import { getProfile } from "~/store/selectors/profile.selectors";
 
 import { IChatFile } from "~/utils/typedefs";
 

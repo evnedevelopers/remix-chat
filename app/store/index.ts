@@ -10,7 +10,7 @@ import { chatSlice } from "~/store/slices/chat.slice";
 import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
 import { uiSlice } from "~/store/slices/ui.slice";
 import { settingsSlice } from "~/store/slices/settings.slice";
-import { aiConversationSlice } from "~/store/slices/aiConversation.slice";
+import { aiConversationSlice } from "~/store/slices/ai-conversation.slice";
 import { rootSaga } from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();

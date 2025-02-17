@@ -17,21 +17,21 @@ import {
   getCanDoAction, getCurrentDataset,
   getShowBuyTokensModal,
   getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selector";
-import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/selectors/ws.selector";
+} from "~/store/selectors/profile.selectors";
+import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/selectors/ws.selectors";
 import {
   getEmptyChat,
   getIsProjectsFetching,
   getProjectId,
   getProjectsMessages
-} from "~/store/selectors/projects.selector";
+} from "~/store/selectors/projects.selectors";
 import { projectsSlice } from "~/store/slices/projects.slice";
 import { chatSlice } from "~/store/slices/chat.slice";
-import { wsActions } from "~/store/saga/ws/actions";
-import { getLoadingImageData } from "~/store/selectors/chat.selector";
-import { projectsActions } from "~/store/saga/projects/actions";
+import { wsActions } from "~/store/actions/ws.actions";
+import { getLoadingImageData } from "~/store/selectors/chat.selectors";
+import { projectsActions } from "~/store/actions/projects.actions";
 import { AppDispatch } from "~/store";
-import { chatActions } from "~/store/saga/chat/actions";
+import { chatActions } from "~/store/actions/chat.actions";
 
 import { styles } from './styles';
 
@@ -128,7 +128,7 @@ export const useChatPage = (
 
     dispatch(
       wsActions.sendMessageRequest({
-        values: {
+        payload: {
           action: 'request',
           app: 'chat',
           event: 'message',
@@ -141,6 +141,7 @@ export const useChatPage = (
             file_id: handleFile,
           },
         },
+        meta: {}
       }),
     );
     const newMessage = {
@@ -230,8 +231,8 @@ export const useChatPage = (
       dispatch(
         projectsActions.createNewChat({
           payload: {
-            project_id: currentDataset?.id,
-            projectName: currentDataset?.name,
+            project_id: currentDataset?.id || '',
+            projectName: currentDataset?.name || '',
             name: 'New Chat',
           },
           meta: { resolve, reject }

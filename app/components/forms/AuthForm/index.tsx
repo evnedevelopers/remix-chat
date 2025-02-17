@@ -1,5 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Form } from "@remix-run/react";
+
 import { styles } from "./styles";
 
 type AuthFormProps = {

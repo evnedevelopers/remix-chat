@@ -10,7 +10,7 @@ import { getValidToken, removeQuotes } from "~/segments/chat/MessageInput/useAud
 
 import { handleErrors } from "~/helpers/handleErrors";
 
-import { getIsChatTyping } from "~/store/selectors/chat.selector";
+import { getIsChatTyping } from "~/store/selectors/chat.selectors";
 import { projectsSlice } from "~/store/slices/projects.slice";
 
 import { IChatFile } from "~/utils/typedefs";

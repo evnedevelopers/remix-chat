@@ -11,9 +11,10 @@ import Visibility from "~/components/icons/Visibility";
 
 import { ratioSplitting } from "~/helpers/ratioSplitting";
 
-import { getScaleImage } from "~/store/selectors/profile.selector";
-import { getIsImageLoading } from "~/store/selectors/chat.selector";
-import { profileSlice } from "~/store/slices/profile.slice";
+import { getScaleImage } from "~/store/selectors/profile.selectors";
+import { getIsImageLoading } from "~/store/selectors/chat.selectors";
+import { profileActions } from "~/store/actions/profile.actions";
+import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
@@ -40,7 +41,7 @@ export const MessageImageItem: FC<MessageImageItemProps> = ({
 }) => {
   const theme = useTheme();
   const scaleImage = useSelector(getScaleImage);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const isImageLoading = useSelector(getIsImageLoading);
   const [imageLoaded, setImageLoaded] = useState(false);
   const loading = keyframes`
@@ -56,7 +57,7 @@ export const MessageImageItem: FC<MessageImageItemProps> = ({
     !isLoading &&
     !scaleImage &&
     dispatch(
-      profileSlice.actions.setScaleImage({
+      profileActions.setScaleImage({
         image,
         ratio,
         chatId,

@@ -15,11 +15,11 @@ import { IconButton } from "~/components/uiKit/IconButton";
 
 import { copyText } from "~/helpers/copyText";
 
-import { getProjectId } from "~/store/selectors/projects.selector";
+import { getProjectId } from "~/store/selectors/projects.selectors";
 import { chatSlice } from "~/store/slices/chat.slice";
 import { modalSlice } from "~/store/slices/modal.slice";
-import { projectsActions } from "~/store/saga/projects/actions";
-import { savedMessagesActions } from "~/store/saga/savedMessages/actions";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { savedMessagesActions } from "~/store/actions/saved-messages.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';

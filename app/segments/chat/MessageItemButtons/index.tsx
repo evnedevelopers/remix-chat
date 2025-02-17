@@ -13,9 +13,9 @@ import { IconButton } from "~/components/uiKit/IconButton";
 import { Tooltip } from "~/components/uiKit/Tooltip";
 import { UpgradeTooltip } from "~/components/uiKit/Tooltip/UpgradeTooltip";
 
-import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selector";
-import { getIsProjectsAudioFetching } from "~/store/selectors/projects.selector";
-import { getIsImageLoading } from "~/store/selectors/chat.selector";
+import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selectors";
+import { getIsProjectsAudioFetching } from "~/store/selectors/projects.selectors";
+import { getIsImageLoading } from "~/store/selectors/chat.selectors";
 
 import { IMessage } from "~/utils/typedefs";
 

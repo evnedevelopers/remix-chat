@@ -14,7 +14,7 @@ export default defineConfig({
       serverBuildFile: 'remix.js',
       buildEnd: async () => {
         await esbuild.build({
-          alias: { "~": "./app" },
+          alias: { "~": "./app", "server": "./server" },
           outfile: "build/server/index.js",
           entryPoints: ["server/index.ts"],
           external: ['./build/server/*'],

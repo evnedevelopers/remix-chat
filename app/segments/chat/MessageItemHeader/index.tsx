@@ -10,7 +10,7 @@ import MoreVert from "~/components/icons/MoreVert";
 import { IconContainer} from "~/components/common/IconContainer";
 import { IconButton } from "~/components/uiKit/IconButton";
 
-import { getProfile } from "~/store/selectors/profile.selector";
+import { getProfile } from "~/store/selectors/profile.selectors";
 
 import { IMessage } from "~/utils/typedefs";
 

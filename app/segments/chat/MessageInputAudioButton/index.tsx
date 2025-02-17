@@ -11,8 +11,8 @@ import { Tooltip } from "~/components/uiKit/Tooltip";
 import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { StopRecordingButton } from "~/segments/chat/StopRecordingButton";
 
-import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selector";
-import { getIsChatTyping, getIsRecording } from "~/store/selectors/chat.selector";
+import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selectors";
+import { getIsChatTyping, getIsRecording } from "~/store/selectors/chat.selectors";
 
 type MessageInputAudioButtonProps = {
   handleStartRecording: () => void;

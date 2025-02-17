@@ -1,12 +1,13 @@
 import { ActionFunction, json } from "@remix-run/node";
+import { RouteAction } from "../../server/route-actions/route-action";
+import { isAuthenticateMiddleware } from "../../server/middlewares/is-authenticate.middleware";
 
-export const action: ActionFunction = async ({ request }) => {
-  if (request.method.toUpperCase() !== "DELETE") {
-    throw new Response("Method Not Allowed", {
-      status: 405,
-      statusText: "Method Not Allowed",
-    });
-  }
-
-  return json({});
-}
+export const action: ActionFunction = new RouteAction()
+  .addMethod({
+    method: 'delete',
+    middlewares: [isAuthenticateMiddleware],
+    actionFunction: async () => {
+      return json({});
+    }
+  })
+  .make();

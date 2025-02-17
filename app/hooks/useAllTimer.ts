@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ActionCreatorWithPayload } from "@reduxjs/toolkit";
-import { settingsActions } from "~/store/saga/settings/actions";
+
+import { settingsActions } from "~/store/actions/settings.actions";
 import { AppDispatch } from "~/store";
 
 export const useAllTimer = (

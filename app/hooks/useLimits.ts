@@ -4,8 +4,9 @@ import { LimitExhaustedContent } from "~/components/modals/LimitExhausted";
 
 import { SubPlansCode } from "~/utils/typedefs";
 
-import { getProfile, getQuestionLimit, getText } from "~/store/selectors/profile.selector";
-import { modalSlice } from "~/store/slices/modal.slice";
+import { getProfile, getQuestionLimit, getText } from "~/store/selectors/profile.selectors";
+
+import { modalActions } from "~/store/actions/modal.actions";
 
 type TextType =
   | 'text_line_1'
@@ -28,7 +29,7 @@ export const useLimits = (
   const handleLimitExceeded = () => {
     if (showBuyTokensModal) {
       dispatch(
-        modalSlice.actions.modal({
+        modalActions.modal({
           component: 'LimitExhausted',
           forceClose: true,
           ...LimitExhaustedContent.buyTokens[text],
@@ -38,7 +39,7 @@ export const useLimits = (
       );
     } else if (showUpdatePlanToUseTokensModal) {
       dispatch(
-        modalSlice.actions.modal({
+        modalActions.modal({
           component: 'LimitExhausted',
           forceClose: true,
           ...LimitExhaustedContent.updateSubscription,
@@ -48,7 +49,7 @@ export const useLimits = (
       );
     } else {
       dispatch(
-        modalSlice.actions.modal({
+        modalActions.modal({
           component: 'LimitExceeded',
           title: 'Info',
           forceClose: true,

@@ -10,17 +10,17 @@ import { getNowDateTimeIso } from "~/helpers/getDateTime";
 
 import { useLimits } from "~/hooks/useLimits";
 
-import { getCurrentProject } from "~/store/selectors/projects.selector";
+import { getCurrentProject } from "~/store/selectors/projects.selectors";
 import {
   getCanDoAction,
   getShowBuyTokensModal,
   getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selector";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { wsActions } from "~/store/saga/ws/actions";
-import { projectsActions } from "~/store/saga/projects/actions";
-import { profileSlice } from "~/store/slices/profile.slice";
+} from "~/store/selectors/profile.selectors";
+
+import { wsActions } from "~/store/actions/ws.actions";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { chatActions } from "~/store/actions/chat.actions";
+import { profileActions } from "~/store/actions/profile.actions";
 import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
@@ -70,10 +70,10 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
     projectsMessages: IMessage[],
     matching: boolean,
   ) => {
-    dispatch(projectsSlice.actions.fillMatchingProject(null));
+    dispatch(projectsActions.fillMatchingProject(null));
     dispatch(
       wsActions.sendMessageRequest({
-        values: {
+        payload: {
           action: 'request',
           app: 'chat',
           event: 'message',
@@ -85,6 +85,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
             continue: null,
           },
         },
+        meta: {}
       }),
     );
     const newMessage = {
@@ -111,12 +112,12 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       files: [],
     };
     dispatch(
-      projectsSlice.actions.setMessages({
+      projectsActions.setMessages({
         chatId,
         projectsMessages: [newAiMessage, newMessage, ...projectsMessages],
       }),
     );
-    dispatch(chatSlice.actions.setMessageId('mock'));
+    dispatch(chatActions.setMessageId('mock'));
     setValue('');
     new Promise((resolve, reject) => {
       dispatch(
@@ -156,9 +157,8 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       );
     })
       .then((data: any) => {
-        // navigate(`${book.chat}/${matchingProject?.name}/${data.id}`);
         handleSendMessage(data.id, matchingProject?.id, [], true);
-        dispatch(profileSlice.actions.setCurrentDataset(project));
+        dispatch(profileActions.setCurrentDataset(project));
       })
       .catch();
   };

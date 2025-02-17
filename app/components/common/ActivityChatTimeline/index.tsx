@@ -1,6 +1,13 @@
 import { FC, MouseEvent } from "react";
 
-import { Box, IconButton, ListItem, ListItemButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  ListItem,
+  ListItemButton,
+  Typography,
+  useTheme
+} from "@mui/material";
 
 import Edit from "~/components/icons/Edit";
 
@@ -26,6 +33,7 @@ export const ActivityChatTimeline: FC<ActivityChatTimelineProps> = ({
   handleAction,
 }) => {
   const theme = useTheme();
+
   const handleNavigate = () => {
     if (closeSidebar) {
       closeSidebar();

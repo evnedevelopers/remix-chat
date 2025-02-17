@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { handleErrors } from "~/helpers/handleErrors";
 
-import { getProfile } from "~/store/selectors/profile.selector";
-import { getIsGlobalSpeaking } from "~/store/selectors/ui.selector";
-import { getSettings } from "~/store/selectors/settings.selector";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { modalSlice } from "~/store/slices/modal.slice";
+import { getProfile } from "~/store/selectors/profile.selectors";
+import { getIsGlobalSpeaking } from "~/store/selectors/ui.selectors";
+import { getSettings } from "~/store/selectors/settings.selectors";
+import { chatActions } from "~/store/actions/chat.actions";
+import { modalActions } from "~/store/actions/modal.actions";
 
 export const getValidToken = async () => '';
 export const removeQuotes = (str: string) => str.replace(/^"(.*)"$/, '$1');
@@ -60,7 +60,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
       } catch (error) {
         handleErrors(error);
         setRecording(false);
-        dispatch(chatSlice.actions.stopRecording());
+        dispatch(chatActions.stopRecording());
       }
     };
 
@@ -74,7 +74,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
       if (!isStopped && shouldSendToServerRef.current) {
         isStopped = true;
         countRef.current -= 1;
-        dispatch(chatSlice.actions.stopRecording());
+        dispatch(chatActions.stopRecording());
         const tokenAccess = await getValidToken();
         mediaStreamRef.current
           ?.getTracks()
@@ -84,8 +84,8 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
         formData.append('audio_type', chunksRef.current[0].type);
 
         const performRequests = async () => {
-          dispatch(chatSlice.actions.stopRecording());
-          dispatch(chatSlice.actions.startProcessing());
+          dispatch(chatActions.stopRecording());
+          dispatch(chatActions.startProcessing());
           try {
             const data = await fetch(
               `${process.env.REACT_APP_API_URL}/messages/listen`,
@@ -98,7 +98,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
               },
             ).then((response) => response.json());
 
-            dispatch(chatSlice.actions.setConvertedText(data.text));
+            dispatch(chatActions.setConvertedText(data.text));
 
             setTimeout(() => {
               scrollToBottom();
@@ -111,11 +111,11 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
         await performRequests();
 
         setRecording(false);
-        dispatch(chatSlice.actions.stopProcessing());
+        dispatch(chatActions.stopProcessing());
       }
       if (!shouldSendToServerRef.current) {
         setRecording(false);
-        dispatch(chatSlice.actions.stopRecording());
+        dispatch(chatActions.stopRecording());
       }
       if (settings) {
         countRef.current = settings?.audio_recording_limit;
@@ -126,7 +126,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
     if (recording) {
       startRecording()
         .then(() => {
-          globalSpeaking && dispatch(chatSlice.actions.startRecording());
+          globalSpeaking && dispatch(chatActions.startRecording());
         })
         .catch((error) => {
           handleErrors(error);
@@ -169,14 +169,14 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
   const handleStartRecording = () => {
     if (!isMediaRecorderSupported()) {
       dispatch(
-        modalSlice.actions.modal({
+        modalActions.modal({
           component: 'ConfirmOrCancel',
           modalPayload: {
             title: 'Feature is not supported by browser version',
             body: 'Please upgrade your browser version in order to use this feature.',
           },
           forceClose: false,
-          onConfirm: () => dispatch(modalSlice.actions.closeModal('ConfirmOrCancel')),
+          onConfirm: () => dispatch(modalActions.closeModal('ConfirmOrCancel')),
           confirmButton: {
             text: 'Go back',
           },
@@ -190,13 +190,13 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
       .then((stream) => {
         setMicrophoneAllowed(true);
 
-        dispatch(chatSlice.actions.startRecording());
+        dispatch(chatActions.startRecording());
         setRecording(true);
       })
       .catch(() => {
         setMicrophoneAllowed(false);
         dispatch(
-          modalSlice.actions.modal({
+          modalActions.modal({
             component: 'ConfirmOrCancel',
             modalPayload: {
               title: 'Microphone is not allowed in browser',
@@ -204,7 +204,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
             },
             forceClose: false,
             onConfirm: () =>
-              dispatch(modalSlice.actions.closeModal('ConfirmOrCancel')),
+              dispatch(modalActions.closeModal('ConfirmOrCancel')),
             confirmButton: {
               text: 'Go back',
             },
@@ -215,7 +215,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
 
   const handleStopRecording = async () => {
     try {
-      dispatch(chatSlice.actions.allowCountdown(false));
+      dispatch(chatActions.allowCountdown(false));
       if (
         mediaRecorderRef.current &&
         mediaRecorderRef.current?.state === 'recording'
@@ -229,7 +229,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
 
   const handleResetAndStopRecording = () => {
     shouldSendToServerRef.current = false;
-    dispatch(chatSlice.actions.allowCountdown(false));
+    dispatch(chatActions.allowCountdown(false));
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state === 'recording'

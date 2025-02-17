@@ -15,14 +15,15 @@ import { MessagesList } from "~/segments/chat/MessagesList";
 
 import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
 
-import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/selectors/projects.selector";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { modalSlice } from "~/store/slices/modal.slice";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { wsActions } from "~/store/saga/ws/actions";
+import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/selectors/projects.selectors";
+
+import { wsActions } from "~/store/actions/ws.actions";
+import { chatActions } from "~/store/actions/chat.actions";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { modalActions } from "~/store/actions/modal.actions";
+import { AppDispatch } from "~/store";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
-import { AppDispatch } from "~/store";
 
 export const ChatIndexView: FC = () => {
   const theme = useTheme();
@@ -46,12 +47,12 @@ export const ChatIndexView: FC = () => {
   }, [chatId, projectName]);
 
   useEffect(() => {
-    dispatch(wsActions.joinChat(chatId));
+    dispatch(wsActions.joinChat([chatId]));
   }, [chatId, dispatch]);
 
   useEffect(() => {
     return () => {
-      dispatch(chatSlice.actions.setConvertedText(null));
+      dispatch(chatActions.setConvertedText(null));
     };
   }, []);
 
@@ -76,7 +77,7 @@ export const ChatIndexView: FC = () => {
   }, [guidanceQuestion]);
 
   useEffect(() => {
-    dispatch(projectsSlice.actions.fillGuidanceQuestion(''));
+    dispatch(projectsActions.fillGuidanceQuestion(''));
     setValue('');
   }, [projectName]);
 
@@ -90,7 +91,7 @@ export const ChatIndexView: FC = () => {
 
   const handleAction = (chatId: string, name: string) => {
     dispatch(
-      modalSlice.actions.modal({
+      modalActions.modal({
         component: 'EditChat',
         title: 'Chat Edit',
         forceClose: true,
@@ -102,7 +103,7 @@ export const ChatIndexView: FC = () => {
 
   useEffect(() => {
     return () => {
-      dispatch(projectsSlice.actions.fillGuidanceQuestion(''));
+      dispatch(projectsActions.fillGuidanceQuestion(''));
     };
   }, []);
 

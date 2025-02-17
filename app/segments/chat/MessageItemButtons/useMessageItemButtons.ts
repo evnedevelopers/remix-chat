@@ -10,11 +10,12 @@ import {
   getProfile,
   getVisualizeLimit, getVisualizeText,
   getVisualizingLimit
-} from "~/store/selectors/profile.selector";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { modalSlice } from "~/store/slices/modal.slice";
-import { wsActions } from "~/store/saga/ws/actions";
-import { projectsActions } from "~/store/saga/projects/actions";
+} from "~/store/selectors/profile.selectors";
+
+import { projectsActions } from "~/store/actions/projects.actions";
+import { wsActions } from "~/store/actions/ws.actions";
+import { modalActions } from "~/store/actions/modal.actions";
+import { AppDispatch } from "~/store";
 
 import { IMessage, SubPlansCode } from "~/utils/typedefs";
 
@@ -27,7 +28,7 @@ export const useMessageItemButtons = (
   projectId: string,
   chatId: string | null,
 ) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const isVisualAdjustments = useSelector(getIsVisualAdjustments);
   const profile = useSelector(getProfile);
   const limit = useSelector(getVisualizingLimit);
@@ -44,9 +45,8 @@ export const useMessageItemButtons = (
       new Promise((resolve, reject) => {
         dispatch(
           projectsActions.fetchMessageAudio({
-            values: { messageId: messageItem.id },
-            resolve,
-            reject,
+            payload: { messageId: messageItem.id },
+            meta: { resolve, reject }
           }),
         );
       })
@@ -66,9 +66,9 @@ export const useMessageItemButtons = (
 
   const handleVisualizeRequest = () => {
     if (isVisualAdjustments) {
-      dispatch(projectsSlice.actions.clearVisualizePrompt());
+      dispatch(projectsActions.clearVisualizePrompt());
       dispatch(
-        modalSlice.actions.modal({
+        modalActions.modal({
           component: 'VisualAdjustments',
           title: 'Visual Adjustments',
           sx: { maxWidth: '480px!important', width: '100%' },
@@ -90,7 +90,7 @@ export const useMessageItemButtons = (
       handle();
       dispatch(
         wsActions.sendMessageRequest({
-          values: {
+          payload: {
             action: 'request',
             app: 'chat',
             event: 'visualize',
@@ -100,12 +100,13 @@ export const useMessageItemButtons = (
               message_id: messageItem.id,
             },
           },
+          meta: {}
         }),
       );
     } else {
       if (profile?.subscription?.visualize_limits === 0 && !enoughTokens) {
         dispatch(
-          modalSlice.actions.modal({
+          modalActions.modal({
             component: 'LimitExhausted',
             forceClose: true,
             ...LimitExhaustedContent.buyTokens.text_line_2,
@@ -115,7 +116,7 @@ export const useMessageItemButtons = (
         );
       } else {
         dispatch(
-          modalSlice.actions.modal({
+          modalActions.modal({
             component: 'LimitExceeded',
             title: 'Info',
             forceClose: true,

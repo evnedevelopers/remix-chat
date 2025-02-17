@@ -6,12 +6,12 @@ import { Box } from "@mui/material";
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 import { Messenger } from "~/segments/chat/Messenger";
 
-import { getNewestMessageId, getOldestMessageId, getProjectId } from "~/store/selectors/projects.selector";
-import { getScrollToMessageId } from "~/store/selectors/saved-messages.selector";
-import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
-import { settingsActions } from "~/store/saga/settings/actions";
-import { chatActions } from "~/store/saga/chat/actions";
-import { getIsAiConversationFetching } from "~/store/selectors/aiConversation.selector";
+import { getNewestMessageId, getOldestMessageId, getProjectId } from "~/store/selectors/projects.selectors";
+import { getScrollToMessageId } from "~/store/selectors/saved-messages.selectors";
+import { savedMessagesActions } from "~/store/actions/saved-messages.actions";
+import { settingsActions } from "~/store/actions/settings.actions";
+import { chatActions } from "~/store/actions/chat.actions";
+import { getIsAiConversationFetching } from "~/store/selectors/ai-conversation.selectors";
 import { AppDispatch } from "~/store";
 
 import { IMessage } from "~/utils/typedefs";
@@ -68,7 +68,7 @@ export const MessagesList: FC<MessagesListProps> = ({
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth' });
-          dispatch(savedMessagesSlice.actions.clearMessageId());
+          dispatch(savedMessagesActions.clearMessageId());
         }, 100);
       }
     }
@@ -85,10 +85,12 @@ export const MessagesList: FC<MessagesListProps> = ({
       typeof oldestId === 'string' &&
       dispatch(
         chatActions.loadMoreMessages({
-          url: `/chats/${chatId}/messages?lt_id=${oldestId}`,
-          chatId,
-          isNext: true,
-          isPrev: false
+          payload: {
+            url: `/chats/${chatId}/messages?lt_id=${oldestId}`,
+            chatId,
+            isNext: true,
+            isPrev: false
+          }
         }),
       );
       return;
@@ -98,9 +100,11 @@ export const MessagesList: FC<MessagesListProps> = ({
         return new Promise((resolve) => {
           dispatch(
             chatActions.loadPrevMessages({
-              url: `/chats/${chatId}/messages?mt_id=${newestId}`,
-              chatId,
-              resolve,
+              payload: {
+                url: `/chats/${chatId}/messages?mt_id=${newestId}`,
+                chatId,
+              },
+              meta: { resolve },
             }),
           );
         })

@@ -8,16 +8,16 @@ import darkRecording from '~/assets/Flow 4.json';
 import lightProcessing from '~/assets/Flow 2.json';
 import lightRecording from '~/assets/Flow 1.json';
 
-import { getTheme } from "~/store/selectors/ui.selector";
+import { getTheme } from "~/store/selectors/ui.selectors";
 import {
   getConvertedText,
   getIsChatTyping,
   getIsProcessing,
   getIsRecording,
   getIsVoiceDetected
-} from "~/store/selectors/chat.selector";
-import { getProfile } from "~/store/selectors/profile.selector";
-import { getIsFileFetching } from "~/store/selectors/projects.selector";
+} from "~/store/selectors/chat.selectors";
+import { getProfile } from "~/store/selectors/profile.selectors";
+import { getIsFileFetching } from "~/store/selectors/projects.selectors";
 import { ThemeVariant } from "~/store/typedefs";
 
 import { IChatFile } from "~/utils/typedefs";

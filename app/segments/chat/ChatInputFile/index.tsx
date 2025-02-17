@@ -11,8 +11,8 @@ import Close from "~/components/icons/Close";
 import AttachFile from "~/components/icons/AttachFile";
 import { IconButton } from "~/components/uiKit/IconButton";
 
-import { projectsActions } from "~/store/saga/projects/actions";
-import { getCurrentFile } from "~/store/selectors/projects.selector";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { getCurrentFile } from "~/store/selectors/projects.selectors";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -31,7 +31,7 @@ export const ChatInputFile: FC<ChatInputFileProps> = () => {
       dispatch(
         projectsActions.deleteChatFile({
           payload: {
-            fileId: file?.id,
+            fileId: file?.id || '',
             chatId: chatId ? chatId : '',
           },
           meta: { resolve, reject }

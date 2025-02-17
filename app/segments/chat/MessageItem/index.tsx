@@ -26,12 +26,13 @@ import {
   getCanDoAction,
   getShowBuyTokensModal,
   getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selector";
-import { getIsChatTyping } from "~/store/selectors/chat.selector";
-import { getIsGlobalSpeaking } from "~/store/selectors/ui.selector";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { wsActions } from "~/store/saga/ws/actions";
+} from "~/store/selectors/profile.selectors";
+import { getIsChatTyping } from "~/store/selectors/chat.selectors";
+import { getIsGlobalSpeaking } from "~/store/selectors/ui.selectors";
+import { chatActions } from "~/store/actions/chat.actions";
+import { projectsActions } from "~/store/actions/projects.actions";
+import { wsActions } from "~/store/actions/ws.actions";
+import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
@@ -77,7 +78,7 @@ export const MessageItem: FC<MessageItemProps> = ({
 }) => {
   const theme = useTheme();
   const isTyping = useSelector(getIsChatTyping);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -98,11 +99,11 @@ export const MessageItem: FC<MessageItemProps> = ({
   const timeBadge = !getIsSameDay(messageItem.created_at, nextDate);
 
   const handleResendRequest = () => {
-    dispatch(chatSlice.actions.setMessageId(id));
-    dispatch(projectsSlice.actions.updateErrorMessage({ id, chatId: chatId || undefined }));
+    dispatch(chatActions.setMessageId(id));
+    dispatch(projectsActions.updateErrorMessage({ id, chatId: chatId || undefined }));
     dispatch(
       wsActions.sendMessageRequest({
-        values: {
+        payload: {
           action: 'request',
           app: 'chat',
           event: 'message',
@@ -114,6 +115,7 @@ export const MessageItem: FC<MessageItemProps> = ({
             dataset_matching: true,
           },
         },
+        meta: {}
       }),
     );
   };
@@ -129,7 +131,7 @@ export const MessageItem: FC<MessageItemProps> = ({
 
     dispatch(
       wsActions.sendMessageRequest({
-        values: {
+        payload: {
           action: 'request',
           app: 'chat',
           event: 'message_continue',
@@ -140,6 +142,7 @@ export const MessageItem: FC<MessageItemProps> = ({
             last_token_index: messageItem.tokenIndex,
           },
         },
+        meta: {}
       }),
     );
   };
@@ -158,15 +161,15 @@ export const MessageItem: FC<MessageItemProps> = ({
       audioElementRef.current
         .play()
         .then(() => {
-          dispatch(chatSlice.actions.startAudioPlaying());
+          dispatch(chatActions.startAudioPlaying());
         })
         .catch(() => {
-          dispatch(chatSlice.actions.stopAudioPlaying());
+          dispatch(chatActions.stopAudioPlaying());
         });
     }
     if (!isPlaying && audioElementRef.current) {
       audioElementRef.current.pause();
-      dispatch(chatSlice.actions.stopAudioPlaying());
+      dispatch(chatActions.stopAudioPlaying());
     }
   }, [messageItem.audio, audioPlayingId, id, isPlaying]);
 
@@ -174,9 +177,9 @@ export const MessageItem: FC<MessageItemProps> = ({
     const handleAudioEnded = () => {
       setIsPlaying(false);
       setAudioPlayingId('');
-      dispatch(chatSlice.actions.setGlobalMessageId(null));
-      dispatch(chatSlice.actions.stopAudioPlaying());
-      globalSpeaking && dispatch(chatSlice.actions.startVoiceDetected());
+      dispatch(chatActions.setGlobalMessageId(null));
+      dispatch(chatActions.stopAudioPlaying());
+      globalSpeaking && dispatch(chatActions.startVoiceDetected());
     };
 
     if (audioElementRef.current) {

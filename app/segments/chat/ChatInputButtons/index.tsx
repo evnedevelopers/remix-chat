@@ -10,8 +10,8 @@ import { CreateChatButton } from "~/segments/chat/CreateChatButton";
 import { Guidance } from "~/segments/home/Guidance";
 import { ChatInputFile } from "~/segments/chat/ChatInputFile";
 
-import { getCurrentFile, getCurrentProject, getIsWaiting, getWaitingProject } from "~/store/selectors/projects.selector";
-import { getCurrentDataset } from "~/store/selectors/profile.selector";
+import { getCurrentFile, getCurrentProject, getIsWaiting, getWaitingProject } from "~/store/selectors/projects.selectors";
+import { getCurrentDataset } from "~/store/selectors/profile.selectors";
 
 type ChatInputButtonsProps = {
   currentChatId: string;
