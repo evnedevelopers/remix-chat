@@ -16,28 +16,34 @@ export class ProjectService {
       description: projectsTable.description,
       iconDark: projectsTable.iconDark,
       iconLight: projectsTable.iconLight,
-      chats: sql`json_agg(json_build_object(
-        'id', ${chatsTable.id},
-        'name', ${chatsTable.name},
-        'files', '[]'::json,
-        'createdAt', ${chatsTable.createdAt},
-        'messages', (
-          SELECT json_agg(json_build_object(
-            'id', ${messagesTable.id},
-            'text', ${messagesTable.text},
-            'author', json_build_object(
-              'id', ${usersTable.id},
-              'firstName', ${usersTable.firstName},
-              'lastName', ${usersTable.lastName},
-              'email', ${usersTable.email}
-            ),
-            'createdAt', ${messagesTable.createdAt}
-          ))
-          FROM ${messagesTable}
-          LEFT JOIN ${usersTable} ON ${eq(messagesTable.authorId, usersTable.id)}
-          WHERE ${messagesTable.chatId} = ${chatsTable.id}
-      )
-      ))`.as('chats'),
+      chats: sql`json_agg(
+        json_build_object(
+          'id', ${chatsTable.id},
+          'name', ${chatsTable.name},
+          'files', '[]'::json,
+          'createdAt', ${chatsTable.createdAt},
+          'messages', json_build_object(
+            'results', (
+              SELECT json_agg(json_build_object(
+                'id', ${messagesTable.id},
+                'text', ${messagesTable.text},
+                'files', '[]'::json,
+                'images', '[]'::json,
+                'author', json_build_object(
+                  'id', ${usersTable.id},
+                  'firstName', ${usersTable.firstName},
+                  'lastName', ${usersTable.lastName},
+                  'email', ${usersTable.email}
+                ),
+                'createdAt', ${messagesTable.createdAt}
+              ))
+              FROM ${messagesTable}
+              LEFT JOIN ${usersTable} ON ${eq(messagesTable.authorId, usersTable.id)}
+              WHERE ${messagesTable.chatId} = ${chatsTable.id}
+            ) 
+          )
+        )
+      )`.as('chats'),
     })
     .from(projectsTable)
     .leftJoin(chatsToProjectsTable, eq(projectsTable.id, chatsToProjectsTable.projectId))

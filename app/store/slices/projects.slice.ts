@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { IChat, IMessage, IMessageImage, IProjects } from "~/utils/typedefs";
+import { IChat, IMessage, IMessageImage } from "~/utils/typedefs";
 import {
   AddChatActionPayload,
   ChangeChatActionPayload,
@@ -19,6 +19,7 @@ import {
 } from "~/store/typedefs";
 
 import { getDate } from "~/helpers/getDateTime";
+import { IProjects } from "~/store/slices/typedefs";
 
 export const projectsSlice = createSlice({
   name: 'projects',
