@@ -34,6 +34,17 @@ export const usersToChatsTable = pgTable('users_to_chats', {
     .references(() => chatsTable.id),
 });
 
+export const usersToChatsRelations = relations(usersToChatsTable, ({ one }) => ({
+  chat: one(chatsTable, {
+    fields: [usersToChatsTable.chatId],
+    references: [chatsTable.id],
+  }),
+  user: one(usersTable, {
+    fields: [usersToChatsTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
 export const userRelations = relations(usersTable, ({ many }) => ({
   chats: many(usersToChatsTable),
   messages: many(messagesTable)
@@ -95,6 +106,17 @@ export const chatsToProjectsTable = pgTable(
     primaryKey({ columns: [t.chatId, t.projectId] })
   ],
 );
+
+export const chatsToProjectsRelations = relations(chatsToProjectsTable, ({ one }) => ({
+  chat: one(chatsTable, {
+    fields: [chatsToProjectsTable.chatId],
+    references: [chatsTable.id],
+  }),
+  project: one(projectsTable, {
+    fields: [chatsToProjectsTable.projectId],
+    references: [projectsTable.id],
+  }),
+}));
 
 export const projectRelations = relations(projectsTable, ({ many }) => ({
   chats: many(chatsToProjectsTable),

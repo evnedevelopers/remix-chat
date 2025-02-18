@@ -7,7 +7,9 @@ export class BcryptTool {
     return await bcrypt.hash(password, saltRounds);
   }
 
-  static async compare(data: string, encryptedPassword: string): Promise<boolean> {
-    return bcrypt.compare(data, encryptedPassword);
+  static async compare(data: string, encrypted?: string): Promise<boolean> {
+    if (encrypted === undefined) return false;
+
+    return bcrypt.compare(data, encrypted);
   }
 }

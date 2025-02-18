@@ -1,5 +1,4 @@
-import { ActionFunction, json, LoaderFunction, MetaFunction, redirect } from "@remix-run/node";
-import { getAuthUser, login } from "~/utils/auth.server";
+import { MetaFunction } from "@remix-run/node";
 import { AuthForm } from "~/components/forms/AuthForm";
 
 export const meta: MetaFunction = () => {
@@ -9,30 +8,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getAuthUser(request);
-
-  if (user) {
-    return redirect("/chat");
-  }
-
-  return null;
-}
-
-export const action: ActionFunction = async ({ request }) => {
-  const form = await request.formData();
-  const action = form.get('_action')
-  const username = form.get('username');
-  const password = form.get('password');
-
-  const isInvalid = typeof username !== 'string' || typeof password !== 'string';
-
-  if (isInvalid) {
-    return json({ error: 'Invalid Form Data', form: action });
-  }
-
-  return login({ username, password });
-}
+export { loader, action } from "server/route-actions/home";
 
 export default function Index() {
   return (

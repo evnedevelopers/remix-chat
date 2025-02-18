@@ -46,15 +46,6 @@ export async function getAuthUser(request: Request) {
   return user || null;
 }
 
-export async function authenticate(request: Request) {
-  const authUser = await getAuthUser(request);
-
-  if (!authUser) {
-    throw redirect('/');
-  }
-
-  return authUser;
-}
 
 export const login = ({
   username,
