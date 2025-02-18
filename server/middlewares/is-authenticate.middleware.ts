@@ -3,7 +3,8 @@ import { AuthService } from "server/services/auth/auth.service";
 import { MiddlewareFunction } from "./typedefs";
 
 export const isAuthenticateMiddleware: MiddlewareFunction<ActionFunctionArgs> = async (args) => {
-  const authUser = await AuthService.make(args.request).authUser();
+  const authService = new AuthService(args.request);
+  const authUser = await authService.authUser();
 
   if (!authUser) {
     throw new Response("Unauthorized", { status: 401 });

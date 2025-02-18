@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useLoaderData } from "@remix-run/react";
-import {json, LoaderFunction, MetaFunction} from "@remix-run/node";
+import { MetaFunction } from "@remix-run/node";
 
 import { ChatIndexView } from "~/segments/chat/view/ChatIndexView";
 

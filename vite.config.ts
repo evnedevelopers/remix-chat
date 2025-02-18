@@ -31,4 +31,12 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  optimizeDeps: {
+    exclude: ['@mapbox/node-pre-gyp']
+  },
+  build: {
+    rollupOptions: {
+      external: ['@mapbox/node-pre-gyp']
+    }
+  }
 });
