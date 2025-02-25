@@ -29,7 +29,7 @@ type MessageActionsProps = {
   rate: boolean | null;
   id: number;
   message: string;
-  isHuman: boolean;
+  isICreator: boolean;
   saved: string | null;
   isMockHuman: boolean;
   isOpen: boolean;
@@ -41,7 +41,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
   rate,
   id,
   message,
-  isHuman,
+  isICreator,
   saved,
   isMockHuman,
   setIsOpen,
@@ -142,10 +142,10 @@ export const MessageActions: FC<MessageActionsProps> = ({
   return (
     <Box
       sx={{
-        ...styles.messageActions(isHuman),
+        ...styles.messageActions(isICreator),
         ...(isOpen && styles.isOpen),
       }}>
-      {!isHuman && (
+      {!isICreator && (
         <>
           <IconButton
             sx={styles.itemButton}

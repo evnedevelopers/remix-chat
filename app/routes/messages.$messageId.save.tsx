@@ -11,7 +11,7 @@ export const action: ActionFunction = new RouteAction()
       return json({
         id: uuidv4(),
         text: '',
-        author: '',
+        author: { id: '' },
         created_at: new Date().toString(),
         message_rate: false,
         saved_at: null,

@@ -29,7 +29,7 @@ import { AppDispatch } from "~/store";
 import { styles } from './styles';
 
 type MessageItemProps = {
-  isHuman: boolean;
+  isICreator: boolean;
   nextDate?: string;
   isTypingMessage: boolean;
   isMockHuman: boolean;
@@ -50,7 +50,7 @@ type MessageItemProps = {
 };
 
 export const MessageItem: FC<MessageItemProps> = ({
-  isHuman,
+  isICreator,
   nextDate,
   isTypingMessage,
   id,
@@ -171,15 +171,15 @@ export const MessageItem: FC<MessageItemProps> = ({
   return (
     <>
       <Box id={id + ''} />
-      <Box display={'flex'} sx={[isHuman && styles.human]}>
-        <Box sx={[styles.messageItem, !isHuman ? styles.messageItemAi : {}]}>
+      <Box display={'flex'} sx={[isICreator && styles.human]}>
+        <Box sx={[styles.messageItem, !isICreator ? styles.messageItemAi : {}]}>
           <MessageItemHeader
             isTypingMessage={isTypingMessage}
             chatId={chatId}
             rate={messageItem.messageRate}
             id={id}
             message={messageItem.text}
-            isHuman={isHuman}
+            isICreator={isICreator}
             saved={messageItem.savedAt}
             isMockHuman={isMockHuman}
             messageItem={messageItem}
@@ -191,8 +191,8 @@ export const MessageItem: FC<MessageItemProps> = ({
           <Box
             mt={'8px'}
             minWidth={'90px'}
-            sx={[isHuman && styles.messageItemHuman]}>
-            <Box sx={[isHuman && styles.messageHuman]}>
+            sx={[isICreator && styles.messageItemHuman]}>
+            <Box sx={[isICreator && styles.messageHuman]}>
               <Typography
                 variant={'body3'}
                 lineHeight={'20px'}
@@ -205,7 +205,7 @@ export const MessageItem: FC<MessageItemProps> = ({
                 {isTypingMessage && isTyping && <CarriageAnimation />}
               </Typography>
             </Box>
-            {!isHuman && messageItem.suggestingQuestions && (
+            {!isICreator && messageItem.suggestingQuestions && (
               <SuggestingQuestions
                 questions={messageItem.suggestingQuestions}
                 handleSendMessage={sendMessage}
@@ -223,7 +223,7 @@ export const MessageItem: FC<MessageItemProps> = ({
             <MessageItemButtons
               ref={buttonRef}
               messageItem={messageItem}
-              isHuman={isHuman}
+              isICreator={isICreator}
               isTypingMessage={isTypingMessage}
               isActiveAudio={audioPlayingId === id}
               isPlaying={isPlaying}

@@ -28,14 +28,13 @@ export interface IMessages {
 export interface IMessage {
   id: number | string;
   text: string;
-  author: string;
+  author: { id: number | string; };
   audio?: string | null;
   createdAt: string;
   messageRate: boolean | null;
   savedAt: string | null;
   chatId?: number;
   projectId?: number;
-  humanMessageId?: number;
   type?: string;
   tokenIndex?: number;
   continueStatus?: boolean;

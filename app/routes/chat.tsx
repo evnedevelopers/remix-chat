@@ -11,10 +11,12 @@ import { wsActions } from "~/store/bus/ws/ws.actions";
 import { IProjects } from "~/store/bus/projects/typedefs";
 import { IProfile } from "~/store/bus/profile/typedefs";
 import { AppDispatch } from "~/store";
+import { IMessages } from "~/store/bus/chat/typedefs";
 
 export interface ILoaderFunctionResult {
   authUser: IProfile;
   projects: IProjects[];
+  messages: IMessages;
 }
 
 export const meta: MetaFunction = () => {
@@ -28,12 +30,15 @@ export { loader } from "server/route-actions/chat";
 
 export default function ChatIndex() {
   const dispatch = useDispatch<AppDispatch>();
-  const { projects, authUser } = useLoaderData<ILoaderFunctionResult>();
 
-  console.table(projects);
+  const { projects, messages, authUser } = useLoaderData<ILoaderFunctionResult>();
 
   dispatch(projectsActions.fillProjects(projects));
   dispatch(profileActions.fillProfile(authUser));
+  dispatch(projectsActions.fillMessages({
+    data: messages,
+    chatId: projects[0].chats[0].id
+  }));
 
   useEffect(() => {
     dispatch(wsActions.connect('/'));

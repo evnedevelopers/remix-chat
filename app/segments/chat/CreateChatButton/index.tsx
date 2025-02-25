@@ -44,7 +44,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
 
   useEffect(() => {
     setLastQuestion(
-      projectsMessages.find((msg) => msg.author === 'human')?.text ?? '',
+      projectsMessages.find((msg) => msg.author.id === 'human')?.text ?? '',
     );
   }, [projectsMessages.length]);
 
@@ -75,7 +75,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
     const newMessage = {
       id: 'mockHuman',
       text: (value || lastQuestion).split('\n').join('<br>'),
-      author: 'human',
+      author: { id: 'human' },
       createdAt: getNowDateTimeIso() + '',
       messageRate: null,
       project: {},
@@ -85,7 +85,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
     const newAiMessage = {
       id: 'mock',
       text: '',
-      author: 'ai',
+      author: { id: 'ai' },
       createdAt: getNowDateTimeIso() + '',
       messageRate: null,
       project: {

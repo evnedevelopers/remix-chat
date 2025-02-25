@@ -125,7 +125,7 @@ export const useChatPage = (
     const newMessage = {
       id: 'mockHuman',
       text: question.split('\n').join('<br>'),
-      author: 'human',
+      author: { id: 'human' },
       created_at: getNowDateTimeIso() + '',
       message_rate: null,
       project: {},
@@ -136,7 +136,7 @@ export const useChatPage = (
     const newAiMessage = {
       id: 'mock',
       text: '',
-      author: 'ai',
+      author: { id: 'ai' },
       created_at: getNowDateTimeIso() + '',
       message_rate: null,
       project: {

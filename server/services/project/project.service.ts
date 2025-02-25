@@ -1,5 +1,5 @@
 import { db } from '../db';
-import {desc, eq, sql} from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import {
   chatsTable,
   chatsToProjectsTable,

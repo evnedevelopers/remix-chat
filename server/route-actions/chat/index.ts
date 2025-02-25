@@ -14,11 +14,18 @@ export const loader: LoaderFunction = new RouteAction()
       method: 'get',
       middlewares: [isAuthenticateWithRedirect],
       actionFunction: async ({ request }) => {
-        const projects = await ProjectService.findUserProjects(request.authUser!.id);
+        const userId = request.authUser!.id;
+
+        const projects = await ProjectService.findUserProjects(userId);
+        const messages = await ProjectService.findUserChatMessages({
+          userId,
+          chatId: (projects[0].chats as { id: number }[])[0].id,
+        });
 
         return json({
           authUser: request.authUser,
           projects,
+          messages: messages[0],
         } as ILoaderFunctionResult);
       }
     }

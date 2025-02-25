@@ -11,6 +11,7 @@ import { projectsActions } from "~/store/bus/projects/projects.actions";
 import { uiActions } from "~/store/bus/ui/ui.actions";
 import { AppDispatch } from "~/store";
 import { IMessage } from "~/store/bus/chat/typedefs";
+import { getProfile } from "~/store/bus/profile/profile.selectors";
 
 type MessengerProps = {
   messages: IMessage[];
@@ -33,6 +34,7 @@ export const Messenger: FC<MessengerProps> = ({
   setValue,
   value,
 }) => {
+  const profile = useSelector(getProfile);
   const typingMessageId = useSelector(getTypingMessageId);
   const isGlobalListening = useSelector(getIsGlobalListening);
   const oneTimeSpeaking = useSelector(getIsOneTimeSpeaking);
@@ -87,7 +89,7 @@ export const Messenger: FC<MessengerProps> = ({
           <MessageItem
             key={message.id}
             id={message.id as number}
-            isHuman={message.author === 'human'}
+            isICreator={message.author.id === profile?.id}
             nextDate={nextDate?.createdAt}
             isTypingMessage={typingMessageId === message.id}
             chatId={chatId}

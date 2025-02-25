@@ -297,12 +297,6 @@ export const projectsSlice = createSlice({
                     files: [],
                   };
                 }
-                if (message.id === 'mockHuman') {
-                  return {
-                    ...message,
-                    id: action.payload.humanMessageId!,
-                  };
-                }
 
                 return action.payload.showCreateChatMessage &&
                 message?.project?.id === action.payload.project.id
@@ -864,7 +858,7 @@ export const projectsSlice = createSlice({
                 ? {
                   ...chat.messages,
                   results: chat.messages.results.map((item, index) => {
-                    if (index === 0 && item.author === 'ai') {
+                    if (index === 0 && item.author.id === 'ai') {
                       return {
                         ...item,
                         suggestingQuestions: {
@@ -902,7 +896,7 @@ export const projectsSlice = createSlice({
                 ? {
                   ...chat.messages,
                   results: chat.messages.results.map((item, index) => {
-                    if (index === 0 && item.author === 'ai') {
+                    if (index === 0 && item.author.id === 'ai') {
                       return {
                         ...item,
                         suggestingQuestions: {

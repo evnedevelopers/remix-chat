@@ -14,7 +14,7 @@ import { getProfile } from "~/store/bus/profile/profile.selectors";
 import { IMessage } from "~/store/bus/chat/typedefs";
 
 type MessageItemHeaderProps = {
-  isHuman: boolean;
+  isICreator: boolean;
   isTypingMessage: boolean;
   chatId: number | null;
   id: number;
@@ -29,7 +29,7 @@ type MessageItemHeaderProps = {
 import { styles } from './styles';
 
 export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
-  isHuman,
+  isICreator,
   isTypingMessage,
   chatId,
   id,
@@ -45,9 +45,9 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Box sx={[styles.messageItemHeader, isHuman && styles.human]}>
+    <Box sx={[styles.messageItemHeader, isICreator && styles.human]}>
       <Box display={'flex'} alignItems={'center'} gap={'10px'}>
-        {isHuman ? (
+        {isICreator ? (
           <Box sx={styles.logo}>
             {profile?.photo ? (
               <Box
@@ -72,7 +72,7 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
             />
           )
         )}
-        {!isHuman && messageItem?.project && messageItem?.project?.name && (
+        {!isICreator && messageItem?.project && messageItem?.project?.name && (
           <Box
             sx={[
               styles.popular,
@@ -96,7 +96,7 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
         sx={[
           styles.wrapper,
           {
-            flexDirection: isHuman ? 'row-reverse' : 'row',
+            flexDirection: isICreator ? 'row-reverse' : 'row',
           },
           isOpen && { width: '194px' },
         ]}
@@ -113,7 +113,7 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
           rate={rate}
           id={id}
           message={message}
-          isHuman={isHuman}
+          isICreator={isICreator}
           saved={saved}
           isMockHuman={isMockHuman}
           setIsOpen={setIsOpen}

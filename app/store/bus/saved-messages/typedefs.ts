@@ -35,7 +35,7 @@ export interface ISavedMessage {
   showCreateChatMessage: boolean;
   messageRate: null | boolean;
   text: string;
-  author: string;
+  author: { id: number | string; };
   images: IMessageImage[];
   chat: IChat;
   forkChat: null | IChat;
