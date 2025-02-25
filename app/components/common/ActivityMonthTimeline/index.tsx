@@ -16,23 +16,22 @@ import KeyboardArrowRight from "~/components/icons/KeyboardArrowRight";
 import Plus from "~/components/icons/Plus";
 import { ActivityChatTimeline } from "~/components/common/ActivityChatTimeline";
 
-import { IMonthChat } from "~/utils/typedefs";
+import { IMonthChat } from "~/store/bus/projects/typedefs";
 
 import { styles } from './styles';
 
 type ActivityMonthTimelineProps = {
-  yearId: string;
+  yearId: number;
   sessionsMont: IMonthChat;
   closeSidebar?: () => void;
-  // isCurrentYear: boolean;
   expanded?: string | false;
   onAccordionChange: (panel?: string) => void;
-  handleClick: (id: string) => void;
+  handleClick: (id: number) => void;
   currentMonth: string | null;
-  currentChatId: string | null;
+  currentChatId: number | null;
   handleCreateNewChat: () => void;
   currentMonthNumber: string | null;
-  handleAction?: (chatId: string, name: string) => void;
+  handleAction?: (chatId: number, name: string) => void;
 };
 
 export const ActivityMonthTimeline: FC<ActivityMonthTimelineProps> = ({
@@ -41,7 +40,6 @@ export const ActivityMonthTimeline: FC<ActivityMonthTimelineProps> = ({
   closeSidebar,
   expanded,
   onAccordionChange,
-  // isCurrentYear,
   handleClick,
   currentMonth,
   currentChatId,

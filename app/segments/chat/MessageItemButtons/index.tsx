@@ -13,11 +13,9 @@ import { IconButton } from "~/components/uiKit/IconButton";
 import { Tooltip } from "~/components/uiKit/Tooltip";
 import { UpgradeTooltip } from "~/components/uiKit/Tooltip/UpgradeTooltip";
 
-import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selectors";
-import { getIsProjectsAudioFetching } from "~/store/selectors/projects.selectors";
-import { getIsImageLoading } from "~/store/selectors/chat.selectors";
-
-import { IMessage } from "~/utils/typedefs";
+import { getIsProjectsAudioFetching } from "~/store/bus/projects/projects.selectors";
+import { getIsImageLoading } from "~/store/bus/chat/chat.selectors";
+import { IMessage } from "~/store/bus/chat/typedefs";
 
 import { styles } from './styles';
 
@@ -28,11 +26,11 @@ type MessageItemButtonsProps = {
   isActiveAudio: boolean;
   isPlaying: boolean;
   isLoading: boolean;
-  setAudioLoadingId: (i: string) => void;
-  setAudioPlayingId: (i: string) => void;
+  setAudioLoadingId: (i: number) => void;
+  setAudioPlayingId: (i: number) => void;
   setIsPlaying: (i: boolean) => void;
-  projectId: string;
-  chatId: string | null;
+  projectId: number;
+  chatId: number | null;
 };
 
 export const MessageItemButtons = forwardRef<
@@ -56,9 +54,7 @@ export const MessageItemButtons = forwardRef<
     ref,
   ) => {
     const theme = useTheme();
-    const isShowButtons = useSelector(getIsShowAudioButtons);
     const isAudioFetching = useSelector(getIsProjectsAudioFetching);
-    const profile = useSelector(getProfile);
     const isImageLoading = useSelector(getIsImageLoading);
 
     const { handleNavigate, handleVisualizeRequest, handleGetAudio } =
@@ -73,7 +69,7 @@ export const MessageItemButtons = forwardRef<
       );
 
     const isHavePlaceholders = messageItem.images.some((image) => {
-      return !image.image && !image.error && !image.deleted_at;
+      return !image.image && !image.error && !image.deletedAt;
     });
 
     return (
@@ -85,13 +81,12 @@ export const MessageItemButtons = forwardRef<
               placement={'right'}
               id={`${messageItem.id}audio`}
               zIndex={10000}
-              open={isShowButtons}>
+            >
               <Box display={'flex'}>
                 <IconButton
                   ref={ref}
                   sx={[isActiveAudio && styles.playing]}
                   disabled={
-                    isShowButtons ||
                     isAudioFetching ||
                     (isPlaying && !isActiveAudio)
                   }
@@ -119,7 +114,7 @@ export const MessageItemButtons = forwardRef<
               placement={'right'}
               id={`${messageItem.id}visualize`}
               zIndex={10000}
-              open={!profile?.subscription}>
+            >
               <Box display={'flex'}>
                 <Button
                   sx={styles.imageButton}
@@ -127,8 +122,7 @@ export const MessageItemButtons = forwardRef<
                   variant={'secondary'}
                   disabled={
                     isImageLoading ||
-                    isHavePlaceholders ||
-                    !profile?.subscription
+                    isHavePlaceholders
                   }
                   startIcon={
                     <Imagine

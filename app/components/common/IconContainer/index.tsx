@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 
 import { Box } from '@mui/material';
 
-import { getTheme } from "~/store/selectors/ui.selectors";
-import { ThemeVariant } from "~/store/typedefs";
+import { getTheme } from "~/store/bus/ui/ui.selectors";
+
+import { ThemeVariant } from "~/store/bus/ui/typedefs";
 
 import { styles } from './styles';
 

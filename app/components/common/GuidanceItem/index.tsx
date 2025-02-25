@@ -4,16 +4,16 @@ import { Box } from "@mui/material";
 
 import { GuidanceContent } from "~/components/common/GuidanceContent";
 
-import { IGuidance } from "~/utils/typedefs";
+import { IGuidance } from "~/store/bus/projects/typedefs";
 
 import { styles } from './styles';
 
 type GuidanceItemProps = {
   text: string;
   title: string;
-  subGuide: Omit<IGuidance, 'sub_guidances'>[];
+  subGuide: Omit<IGuidance, 'subGuidances'>[];
   isRead: boolean;
-  guidance_id: string;
+  guidanceId: number;
   isSideBar?: boolean;
   handleClick: () => void;
 };
@@ -23,7 +23,7 @@ export const GuidanceItem: FC<GuidanceItemProps> = ({
   title,
   subGuide,
   isRead,
-  guidance_id,
+  guidanceId,
   isSideBar = true,
   handleClick,
 }) => {
@@ -54,7 +54,7 @@ export const GuidanceItem: FC<GuidanceItemProps> = ({
         isRead={isRead}
         isSubGuide={!!subGuide.length}
         isSideBar={isSideBar}
-        guidance_id={guidance_id}
+        guidanceId={guidanceId}
       />
       {subGuide.length > 0 && (
         <Box
@@ -68,12 +68,12 @@ export const GuidanceItem: FC<GuidanceItemProps> = ({
               key={item.id}
               title={item.title}
               text={item.text}
-              isRead={item.is_read}
+              isRead={item.isRead}
               isSubGuide={false}
               isSubItem
               isSideBar={isSideBar}
-              guidance_id={guidance_id}
-              subguidance_id={item.id}
+              guidanceId={guidanceId}
+              subguidanceId={item.id}
             />
           ))}
         </Box>

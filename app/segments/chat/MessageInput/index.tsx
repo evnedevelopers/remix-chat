@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { useSelector } from "react-redux";
 
 import { useSnackbar } from "notistack";
@@ -19,24 +19,22 @@ import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { MessageInputFileButton } from "~/segments/chat/MessageInputFileButton";
 import { MessageInputAudioButton } from "~/segments/chat/MessageInputAudioButton";
 
-import { getCurrentFile, getIsFileFetching } from "~/store/selectors/projects.selectors";
-import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/selectors/chat.selectors";
-import { getProfile } from "~/store/selectors/profile.selectors";
-
-import { IChatFile } from "~/utils/typedefs";
+import { getCurrentFile, getIsFileFetching } from "~/store/bus/projects/projects.selectors";
+import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/bus/chat/chat.selectors";
+import { IChatFile } from "~/store/bus/chat/typedefs";
 
 import { styles } from './styles';
 
 type MessageInputProps = {
   value: string;
-  setValue: any;
+  setValue: Dispatch<SetStateAction<string>>;
   handleSendMessage: (
     question: string,
     isFileContext: boolean,
     file?: IChatFile | null,
   ) => void;
   scrollToBottom: () => void;
-  currentProjectId?: string;
+  currentProjectId?: number;
 };
 
 export const MessageInput: FC<MessageInputProps> = ({
@@ -46,22 +44,21 @@ export const MessageInput: FC<MessageInputProps> = ({
   scrollToBottom,
 }) => {
   const { projectName, chatId } = useChatParams();
-  const { file, is_file_context } = useSelector(
+  const { file, isFileContext } = useSelector(
     getCurrentFile(chatId, projectName),
   );
   const isTyping = useSelector(getIsChatTyping);
   const isRecording = useSelector(getIsRecording);
   const isProcessing = useSelector(getIsProcessing);
   const isFileFetching = useSelector(getIsFileFetching);
-  const profile = useSelector(getProfile);
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.down('md'));
   const { enqueueSnackbar } = useSnackbar();
   const { animation, handleKeyPress, handleChange, isShowAnimation } =
-    useMessageInput(setValue, value, handleSendMessage, is_file_context, file);
+    useMessageInput(setValue, value, handleSendMessage, isFileContext, file);
 
   const handleClick = () => {
-    handleSendMessage(value, is_file_context, file);
+    handleSendMessage(value, isFileContext, file);
   };
 
   const {
@@ -145,7 +142,7 @@ export const MessageInput: FC<MessageInputProps> = ({
                   placement={'top'}
                   id={'text'}
                   zIndex={10000}
-                  open={!profile?.subscription}>
+                >
                   <Box display={'flex'}>
                     <IconButton
                       onClick={handleClick}
@@ -153,8 +150,7 @@ export const MessageInput: FC<MessageInputProps> = ({
                       disabled={
                         isFileFetching ||
                         isTyping ||
-                        !value.trim().length ||
-                        !profile?.subscription
+                        !value.trim().length
                       }>
                       {isTyping ? (
                         <DotsAnimation />

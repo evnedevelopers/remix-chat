@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, Dispatch, KeyboardEventHandler, SetStateAction, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { isMobile, isTablet } from 'react-device-detect';
@@ -8,23 +8,20 @@ import darkRecording from '~/assets/Flow 4.json';
 import lightProcessing from '~/assets/Flow 2.json';
 import lightRecording from '~/assets/Flow 1.json';
 
-import { getTheme } from "~/store/selectors/ui.selectors";
+import { getTheme } from "~/store/bus/ui/ui.selectors";
 import {
   getConvertedText,
   getIsChatTyping,
   getIsProcessing,
   getIsRecording,
   getIsVoiceDetected
-} from "~/store/selectors/chat.selectors";
-import { getProfile } from "~/store/selectors/profile.selectors";
-import { getIsFileFetching } from "~/store/selectors/projects.selectors";
-import { ThemeVariant } from "~/store/typedefs";
-
-import { IChatFile } from "~/utils/typedefs";
-
+} from "~/store/bus/chat/chat.selectors";
+import { getIsFileFetching } from "~/store/bus/projects/projects.selectors";
+import {IChatFile} from "~/store/bus/chat/typedefs";
+import {ThemeVariant} from "~/store/bus/ui/typedefs";
 
 export const useMessageInput = (
-  setValue: any,
+  setValue: Dispatch<SetStateAction<string>>,
   value: string,
   handleSendMessage: (
     value: string,
@@ -36,9 +33,8 @@ export const useMessageInput = (
 ) => {
   const themes = useSelector(getTheme);
   const convertedText = useSelector(getConvertedText);
-  const profile = useSelector(getProfile);
   const isTyping = useSelector(getIsChatTyping);
-  const [animation, setAnimation] = useState<any>();
+  const [animation, setAnimation] = useState<Record<string, unknown>>();
   const isRecording = useSelector(getIsRecording);
   const isProcessing = useSelector(getIsProcessing);
   const isVoiceDetected = useSelector(getIsVoiceDetected);
@@ -64,7 +60,6 @@ export const useMessageInput = (
     }
     if (e.key === 'Enter' && !(isTablet || isMobile)) {
       e.preventDefault();
-      profile?.subscription &&
       !!value.trim().length &&
       !isTyping &&
       handleSendMessage(value, isFileContext, file);

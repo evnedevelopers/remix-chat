@@ -13,14 +13,12 @@ import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams"
 import { useChatPage } from "~/segments/chat/view/ChatIndexView/useChatPage";
 import { MessagesList } from "~/segments/chat/MessagesList";
 
-import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
+import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/bus/projects/projects.selectors";
 
-import { getChatData, getCurrentProject, getGuidanceQuestion } from "~/store/selectors/projects.selectors";
-
-import { wsActions } from "~/store/actions/ws.actions";
-import { chatActions } from "~/store/actions/chat.actions";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { modalActions } from "~/store/actions/modal.actions";
+import { wsActions } from "~/store/bus/ws/ws.actions";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { modalActions } from "~/store/bus/modal/modal.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
@@ -34,13 +32,12 @@ export const ChatIndexView: FC = () => {
   const [value, setValue] = useState('');
   const [size, setSize] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [currentChatId, setCurrentChatId] = useState('');
+  const [currentChatId, setCurrentChatId] = useState(0);
   const refInput = useRef<HTMLDivElement>();
   const currentProject = useSelector(getCurrentProject(projectName));
   const { currentYearId, currentMonthId, id } = useSelector(
     getChatData(chatId),
   );
-  const { handle } = useTokensDisclaimer('questions');
 
   useEffect(() => {
     chatId && setCurrentChatId(chatId);
@@ -67,7 +64,6 @@ export const ChatIndexView: FC = () => {
     value,
     currentChatId,
     setValue,
-    handle,
     projectName,
   );
 
@@ -85,11 +81,11 @@ export const ChatIndexView: FC = () => {
     refInput.current && setSize(refInput.current?.clientHeight);
   }, [refInput.current?.clientHeight]);
 
-  const handleClick = (id: string) => {
+  const handleClick = (id: number) => {
     alert('handleClick: ' + id);
   };
 
-  const handleAction = (chatId: string, name: string) => {
+  const handleAction = (chatId: number, name: string) => {
     dispatch(
       modalActions.modal({
         component: 'EditChat',

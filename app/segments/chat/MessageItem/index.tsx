@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
@@ -14,24 +14,16 @@ import { MessageItemHeader } from "~/segments/chat/MessageItemHeader";
 import { MessageItemButtons } from "~/segments/chat/MessageItemButtons";
 import { CarriageAnimation } from "~/segments/chat/CarriageAnimation";
 import { MessageItemFile } from "~/segments/chat/MessageItemFile";
+import { SendMessageFunction } from "~/segments/chat/view/ChatIndexView/useChatPage";
 
 import { getIsSameDay } from "~/helpers/getDateTime";
 
-import { useLimits } from "~/hooks/useLimits";
-import { useTokensDisclaimer } from "~/hooks/useTokensDisclaimer";
-
-import { IMessage } from "~/utils/typedefs";
-
-import {
-  getCanDoAction,
-  getShowBuyTokensModal,
-  getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selectors";
-import { getIsChatTyping } from "~/store/selectors/chat.selectors";
-import { getIsGlobalSpeaking } from "~/store/selectors/ui.selectors";
-import { chatActions } from "~/store/actions/chat.actions";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { wsActions } from "~/store/actions/ws.actions";
+import { getIsChatTyping } from "~/store/bus/chat/chat.selectors";
+import { getIsGlobalSpeaking } from "~/store/bus/ui/ui.selectors";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { wsActions } from "~/store/bus/ws/ws.actions";
+import { IMessage } from "~/store/bus/chat/typedefs";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -41,22 +33,21 @@ type MessageItemProps = {
   nextDate?: string;
   isTypingMessage: boolean;
   isMockHuman: boolean;
-  id: string;
-  chatId: string | null;
+  id: number;
+  chatId: number | null;
   lastHumanMessage: string;
-  projectId: string;
+  projectId: number;
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
   audioPlayingId: string | number;
-  setAudioPlayingId: (isPlaying: string) => void;
+  setAudioPlayingId: (isPlaying: number) => void;
   audioLoadingId: number | string;
-  setAudioLoadingId: (isPlaying: string) => void;
+  setAudioLoadingId: (isPlaying: number) => void;
   messageItem: IMessage;
-  sendMessage: any;
+  sendMessage: SendMessageFunction;
   value: string;
-  setValue: any;
+  setValue: Dispatch<SetStateAction<string>>;
 };
-
 
 export const MessageItem: FC<MessageItemProps> = ({
   isHuman,
@@ -83,20 +74,8 @@ export const MessageItem: FC<MessageItemProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const globalSpeaking = useSelector(getIsGlobalSpeaking);
-  const canDoAction = useSelector(getCanDoAction);
-  const showBuyTokensModal = useSelector(getShowBuyTokensModal);
-  const showUpdatePlanToUseTokensModal = useSelector(
-    getShowUpdatePlanToUseTokensModal,
-  );
 
-  const { handleLimitExceeded } = useLimits(
-    showUpdatePlanToUseTokensModal,
-    showBuyTokensModal,
-  );
-
-  const { handle } = useTokensDisclaimer('questions');
-
-  const timeBadge = !getIsSameDay(messageItem.created_at, nextDate);
+  const timeBadge = !getIsSameDay(messageItem.createdAt, nextDate);
 
   const handleResendRequest = () => {
     dispatch(chatActions.setMessageId(id));
@@ -121,14 +100,6 @@ export const MessageItem: FC<MessageItemProps> = ({
   };
 
   const handleContinueRequest = () => {
-    handle();
-
-    if (!canDoAction) {
-      handleLimitExceeded();
-
-      return;
-    }
-
     dispatch(
       wsActions.sendMessageRequest({
         payload: {
@@ -136,10 +107,10 @@ export const MessageItem: FC<MessageItemProps> = ({
           app: 'chat',
           event: 'message_continue',
           data: {
-            project_id: messageItem.project?.id,
-            chat_id: chatId,
-            message_id: id,
-            last_token_index: messageItem.tokenIndex,
+            projectId: messageItem.project?.id,
+            chatId: chatId,
+            messageId: id,
+            lastTokenIndex: messageItem.tokenIndex,
           },
         },
         meta: {}
@@ -176,7 +147,7 @@ export const MessageItem: FC<MessageItemProps> = ({
   useEffect(() => {
     const handleAudioEnded = () => {
       setIsPlaying(false);
-      setAudioPlayingId('');
+      setAudioPlayingId(0);
       dispatch(chatActions.setGlobalMessageId(null));
       dispatch(chatActions.stopAudioPlaying());
       globalSpeaking && dispatch(chatActions.startVoiceDetected());
@@ -205,11 +176,11 @@ export const MessageItem: FC<MessageItemProps> = ({
           <MessageItemHeader
             isTypingMessage={isTypingMessage}
             chatId={chatId}
-            rate={messageItem.message_rate}
+            rate={messageItem.messageRate}
             id={id}
             message={messageItem.text}
             isHuman={isHuman}
-            saved={messageItem.saved_at}
+            saved={messageItem.savedAt}
             isMockHuman={isMockHuman}
             messageItem={messageItem}
             projectId={projectId}
@@ -301,7 +272,7 @@ export const MessageItem: FC<MessageItemProps> = ({
             width: '100%!important',
             maxWidth: 'unset!important',
           }}>
-          <MessageTimeBadge date={messageItem.created_at} />
+          <MessageTimeBadge date={messageItem.createdAt} />
         </Box>
       )}
     </>

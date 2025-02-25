@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 
-export const handleErrors = (error: any, type?: any, title?: string) => {
+export const handleErrors = (error: unknown, type?: unknown, title?: string) => {
   if (process.env.NODE_ENV !== 'development') {
     if (title) {
       Sentry.setExtras({ info_title: `${title} -> ${error}` });

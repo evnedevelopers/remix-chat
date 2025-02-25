@@ -1,10 +1,11 @@
 import { db } from '../db';
-import { eq, sql } from "drizzle-orm";
+import {desc, eq, sql} from "drizzle-orm";
 import {
   chatsTable,
   chatsToProjectsTable,
   messagesTable,
-  projectsTable, usersTable,
+  projectsTable,
+  usersTable,
   usersToChatsTable
 } from "../db/schema";
 
@@ -16,34 +17,50 @@ export class ProjectService {
       description: projectsTable.description,
       iconDark: projectsTable.iconDark,
       iconLight: projectsTable.iconLight,
-      chats: sql`json_agg(
-        json_build_object(
-          'id', ${chatsTable.id},
-          'name', ${chatsTable.name},
-          'files', '[]'::json,
-          'createdAt', ${chatsTable.createdAt},
-          'messages', json_build_object(
-            'results', (
-              SELECT json_agg(json_build_object(
-                'id', ${messagesTable.id},
-                'text', ${messagesTable.text},
-                'files', '[]'::json,
-                'images', '[]'::json,
-                'author', json_build_object(
-                  'id', ${usersTable.id},
-                  'firstName', ${usersTable.firstName},
-                  'lastName', ${usersTable.lastName},
-                  'email', ${usersTable.email}
-                ),
-                'createdAt', ${messagesTable.createdAt}
-              ))
-              FROM ${messagesTable}
-              LEFT JOIN ${usersTable} ON ${eq(messagesTable.authorId, usersTable.id)}
-              WHERE ${messagesTable.chatId} = ${chatsTable.id}
-            ) 
+      chats: sql`
+        json_agg(
+          json_build_object(
+            'id', ${chatsTable.id},
+            'name', ${chatsTable.name},
+            'files', '[]'::json,
+            'createdAt', ${chatsTable.createdAt},
+            'messages', json_build_object(
+              'status', TRUE,
+              'count', (
+                SELECT COUNT(${messagesTable}.*)
+                FROM ${messagesTable}
+                WHERE ${messagesTable.chatId} = ${chatsTable.id}
+              ),
+              'results', (
+                SELECT json_agg(
+                  json_build_object(
+                    'id', latest_messages.id,
+                    'text', latest_messages.text,
+                    'files', '[]'::json,
+                    'images', '[]'::json,
+                    'author', latest_messages.author,
+                    'createdAt', latest_messages.created_at
+                  )
+                )
+                FROM (
+                  SELECT 
+                    ${messagesTable}.*, 
+                    json_build_object(
+                      'id', ${usersTable.id},
+                      'firstName', ${usersTable.firstName},
+                      'lastName', ${usersTable.lastName}
+                    ) AS author
+                  FROM ${messagesTable}
+                  LEFT JOIN ${usersTable} ON ${messagesTable.authorId} = ${usersTable.id}
+                  WHERE ${messagesTable.chatId} = ${chatsTable.id}
+                  ORDER BY ${messagesTable.createdAt} DESC
+                  LIMIT 20
+                ) AS latest_messages
+              )
+            )
           )
         )
-      )`.as('chats'),
+      `
     })
     .from(projectsTable)
     .leftJoin(chatsToProjectsTable, eq(projectsTable.id, chatsToProjectsTable.projectId))
@@ -51,5 +68,85 @@ export class ProjectService {
     .leftJoin(usersToChatsTable, eq(chatsTable.id, usersToChatsTable.chatId))
     .where(eq(usersToChatsTable.userId, userId))
     .groupBy(projectsTable.id);
+  }
+
+  static async findUserChatMessages({
+    userId,
+    chatId
+  }: {
+    userId: number,
+    chatId: number
+  }) {
+    await this.findUserChat({ userId, chatId })
+
+    return this.findChatMessages(chatId);
+  }
+
+  static async findUserChat({
+    userId,
+    chatId
+  } : {
+    chatId: number,
+    userId: number
+  }) {
+    const chat = await db.query.chatsTable.findMany({
+      where: eq(chatsTable.id, chatId),
+      with: {
+        participants: {
+          where: eq(usersToChatsTable.userId, userId),
+        }
+      }
+    });
+
+    if (!chat) {
+      throw new Response("Unauthorized", { status: 403 });
+    }
+
+    return chat;
+  }
+
+  static async findChatMessages(chatId: number) {
+    const chatMessagesTable = db
+      .select({
+        id: messagesTable.id,
+        text: messagesTable.text,
+        createdAt: messagesTable.createdAt,
+        author: sql`
+          json_build_object(
+            'id', ${usersTable.id},
+            'firstName', ${usersTable.firstName},
+            'lastName', ${usersTable.lastName}
+          ) as author
+        `
+      })
+      .from(messagesTable)
+      .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))
+      .where(eq(messagesTable.chatId, chatId))
+      .orderBy(desc(messagesTable.createdAt))
+      .limit(20)
+      .as('chat_messages')
+
+    return db.select({
+      status: sql`TRUE`,
+      count: sql`COUNT(${messagesTable}.id)::INTEGER`,
+      results: sql`
+        (
+          SELECT json_agg(
+            json_build_object(
+              'id', chat_messages.id,
+              'text', chat_messages.text,
+              'files', '[]'::json,
+              'images', '[]'::json,
+              'author', chat_messages.author,
+              'createdAt', chat_messages.created_at
+            )
+          )
+          FROM ${chatMessagesTable}
+        )
+      `
+    })
+    .from(messagesTable)
+    .where(eq(messagesTable.chatId, chatId))
+    .groupBy(messagesTable.chatId);
   }
 }

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Box, Button, Typography, useTheme } from "@mui/material";
@@ -8,32 +8,24 @@ import { IconContainer } from "~/components/common/IconContainer";
 
 import { getNowDateTimeIso } from "~/helpers/getDateTime";
 
-import { useLimits } from "~/hooks/useLimits";
+import { getCurrentProject } from "~/store/bus/projects/projects.selectors";
 
-import { getCurrentProject } from "~/store/selectors/projects.selectors";
-import {
-  getCanDoAction,
-  getShowBuyTokensModal,
-  getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selectors";
-
-import { wsActions } from "~/store/actions/ws.actions";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { chatActions } from "~/store/actions/chat.actions";
-import { profileActions } from "~/store/actions/profile.actions";
+import { wsActions } from "~/store/bus/ws/ws.actions";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { profileActions } from "~/store/bus/profile/profile.actions";
+import { IMessage } from "~/store/bus/chat/typedefs";
 import { AppDispatch } from "~/store";
-
-import { IMessage } from "~/utils/typedefs";
 
 import { styles } from './styles';
 
 type CreateChatButtonProps = {
-  matchingProject: any;
+  matchingProject: IMessage['project'];
   value: string;
   projectsMessages: IMessage[];
-  currentChatId: string;
-  currentProjectId: string;
-  setValue: any;
+  currentChatId: number;
+  currentProjectId: number;
+  setValue: Dispatch<SetStateAction<string>>;
 };
 
 export const CreateChatButton: FC<CreateChatButtonProps> = ({
@@ -45,18 +37,10 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   setValue,
 }) => {
   const theme = useTheme();
+
   const dispatch = useDispatch<AppDispatch>();
   const [lastQuestion, setLastQuestion] = useState('');
   const project = useSelector(getCurrentProject(matchingProject?.name));
-  const canDoAction = useSelector(getCanDoAction);
-  const showBuyTokensModal = useSelector(getShowBuyTokensModal);
-  const showUpdatePlanToUseTokensModal = useSelector(
-    getShowUpdatePlanToUseTokensModal,
-  );
-  const { handleLimitExceeded } = useLimits(
-    showUpdatePlanToUseTokensModal,
-    showBuyTokensModal,
-  );
 
   useEffect(() => {
     setLastQuestion(
@@ -65,8 +49,8 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   }, [projectsMessages.length]);
 
   const handleSendMessage = (
-    chatId: string,
-    projectId: string,
+    chatId: number,
+    projectId: number,
     projectsMessages: IMessage[],
     matching: boolean,
   ) => {
@@ -79,9 +63,9 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
           event: 'message',
           data: {
             query: (value || lastQuestion).split('\n').join('<br>'),
-            project_id: projectId,
-            chat_id: chatId,
-            dataset_matching: matching,
+            projectId: projectId,
+            chatId: chatId,
+            datasetMatching: matching,
             continue: null,
           },
         },
@@ -92,8 +76,8 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       id: 'mockHuman',
       text: (value || lastQuestion).split('\n').join('<br>'),
       author: 'human',
-      created_at: getNowDateTimeIso() + '',
-      message_rate: null,
+      createdAt: getNowDateTimeIso() + '',
+      messageRate: null,
       project: {},
       images: [],
       files: [],
@@ -102,11 +86,11 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       id: 'mock',
       text: '',
       author: 'ai',
-      created_at: getNowDateTimeIso() + '',
-      message_rate: null,
+      createdAt: getNowDateTimeIso() + '',
+      messageRate: null,
       project: {
-        icon_light: '',
-        icon_dark: '',
+        iconLight: '',
+        iconDark: '',
       },
       images: [],
       files: [],
@@ -124,7 +108,7 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
         projectsActions.updateChat({
           payload: {
             id: currentChatId,
-            waiting_user_response: false,
+            waitingUserResponse: false,
           },
           meta: {
             resolve,
@@ -138,17 +122,11 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   };
 
   const createNewChat = () => {
-    if (!canDoAction) {
-      handleLimitExceeded();
-
-      return;
-    }
-
     new Promise((resolve, reject) => {
       dispatch(
         projectsActions.createNewChat({
           payload: {
-            project_id: matchingProject?.id,
+            projectId: matchingProject?.id,
             projectName: matchingProject?.name,
             name: 'New Chat',
           },
@@ -156,20 +134,14 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
         })
       );
     })
-      .then((data: any) => {
-        handleSendMessage(data.id, matchingProject?.id, [], true);
+      .then((data) => {
+        handleSendMessage((data as { id: number }).id, matchingProject?.id, [], true);
         dispatch(profileActions.setCurrentDataset(project));
       })
       .catch();
   };
 
   const continueSibyl = () => {
-    if (!canDoAction) {
-      handleLimitExceeded();
-
-      return;
-    }
-
     handleSendMessage(currentChatId, currentProjectId, projectsMessages, false);
   };
 
@@ -177,8 +149,8 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
     <Box sx={styles.createChatButton}>
       <Box display={'flex'} alignItems={'center'} gap={'20px'}>
         <IconContainer
-          lightIcon={matchingProject?.icon_light}
-          darkIcon={matchingProject?.icon_dark}
+          lightIcon={matchingProject?.iconLight}
+          darkIcon={matchingProject?.iconDark}
           size={32}
         />
         <Typography

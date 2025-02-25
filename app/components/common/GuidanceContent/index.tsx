@@ -8,9 +8,9 @@ import AddCircleOutline from "~/components/icons/AddCircleOutline";
 
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 
-import { getProjectId } from "~/store/selectors/projects.selectors";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { uiActions } from "~/store/actions/ui.actions";
+import { getProjectId } from "~/store/bus/projects/projects.selectors";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { uiActions } from "~/store/bus/ui/ui.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -21,8 +21,8 @@ type GuidanceContentProps = {
   isRead: boolean;
   isSubGuide: boolean;
   isSideBar: boolean;
-  guidance_id: string;
-  subguidance_id?: string;
+  guidanceId: number;
+  subguidanceId?: number;
   isSubItem?: boolean;
 };
 
@@ -32,8 +32,8 @@ export const GuidanceContent: FC<GuidanceContentProps> = ({
   title,
   isSubGuide,
   isSideBar,
-  guidance_id,
-  subguidance_id,
+  guidanceId,
+  subguidanceId,
 }) => {
   const theme = useTheme();
   const { projectName } = useChatParams();
@@ -46,8 +46,8 @@ export const GuidanceContent: FC<GuidanceContentProps> = ({
     !isRead &&
     dispatch(
       projectsActions.readGuidance({
-        guidance_id,
-        subguidance_id: subguidance_id ?? null,
+        guidanceId,
+        subguidanceId: subguidanceId ?? null,
         projectId,
       }),
     );

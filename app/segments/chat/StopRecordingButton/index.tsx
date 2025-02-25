@@ -7,20 +7,21 @@ import Stop from "~/components/icons/Stop";
 
 import { useAllTimer } from "~/hooks/useAllTimer";
 
-import { getAllowCountdown } from "~/store/selectors/chat.selectors";
-import { getAudioTimer } from "~/store/selectors/settings.selectors";
-import { chatActions } from "~/store/actions/chat.actions";
+import { getAllowCountdown } from "~/store/bus/chat/chat.selectors";
+import { getAudioTimer } from "~/store/bus/settings/settings.selectors";
+import { chatActions } from "~/store/bus/chat/chat.actions";
 
 import { styles } from './styles';
 
 type StopRecordingButtonProps = {
-  handleStopRecording: () => Promise<any>;
+  handleStopRecording: () => Promise<void>;
 };
 
 export const StopRecordingButton: FC<StopRecordingButtonProps> = ({
   handleStopRecording,
 }) => {
   const theme = useTheme();
+
   const allowCountdown = useSelector(getAllowCountdown);
   const audioTimer = useSelector(getAudioTimer);
 

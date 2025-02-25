@@ -5,15 +5,15 @@ import { MetaFunction } from "@remix-run/node";
 
 import { ChatIndexView } from "~/segments/chat/view/ChatIndexView";
 
-import { IUser, IProjects } from "~/utils/typedefs";
-
-import { projectsActions } from "~/store/actions/projects.actions";
-import { profileActions } from "~/store/actions/profile.actions";
-import { wsActions } from "~/store/actions/ws.actions";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { profileActions } from "~/store/bus/profile/profile.actions";
+import { wsActions } from "~/store/bus/ws/ws.actions";
+import { IProjects } from "~/store/bus/projects/typedefs";
+import { IProfile } from "~/store/bus/profile/typedefs";
 import { AppDispatch } from "~/store";
 
 export interface ILoaderFunctionResult {
-  authUser: IUser;
+  authUser: IProfile;
   projects: IProjects[];
 }
 
@@ -29,6 +29,8 @@ export { loader } from "server/route-actions/chat";
 export default function ChatIndex() {
   const dispatch = useDispatch<AppDispatch>();
   const { projects, authUser } = useLoaderData<ILoaderFunctionResult>();
+
+  console.table(projects);
 
   dispatch(projectsActions.fillProjects(projects));
   dispatch(profileActions.fillProfile(authUser));

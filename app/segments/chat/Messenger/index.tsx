@@ -1,26 +1,26 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, SetStateAction, Dispatch } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { isIOS } from 'react-device-detect';
 
 import { MessageItem } from "~/segments/chat/MessageItem";
+import { SendMessageFunction } from "~/segments/chat/view/ChatIndexView/useChatPage";
 
-import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/selectors/chat.selectors";
-import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/selectors/ui.selectors";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { uiActions } from "~/store/actions/ui.actions";
+import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/bus/chat/chat.selectors";
+import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/bus/ui/ui.selectors";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { uiActions } from "~/store/bus/ui/ui.actions";
 import { AppDispatch } from "~/store";
-
-import { IMessage } from "~/utils/typedefs";
+import { IMessage } from "~/store/bus/chat/typedefs";
 
 type MessengerProps = {
   messages: IMessage[];
-  chatId: string;
-  mainProjectId: string;
-  audioLoadingId: string;
-  setAudioLoadingId: (isPlaying: string) => void;
-  sendMessage: any;
+  chatId: number;
+  mainProjectId: number;
+  audioLoadingId: number;
+  setAudioLoadingId: Dispatch<SetStateAction<number>>;
+  sendMessage: SendMessageFunction;
   value: string;
-  setValue: any;
+  setValue: Dispatch<SetStateAction<string>>;
 };
 
 export const Messenger: FC<MessengerProps> = ({
@@ -56,7 +56,6 @@ export const Messenger: FC<MessengerProps> = ({
       !isIOS &&
       globalMessageId &&
       (isGlobalListening || oneTimeSpeaking) &&
-      globalMessageId !== 'mock' &&
       !isTyping
     ) {
       new Promise((resolve, reject) => {
@@ -87,14 +86,14 @@ export const Messenger: FC<MessengerProps> = ({
         return (
           <MessageItem
             key={message.id}
-            id={message.id}
+            id={message.id as number}
             isHuman={message.author === 'human'}
-            nextDate={nextDate?.created_at}
+            nextDate={nextDate?.createdAt}
             isTypingMessage={typingMessageId === message.id}
             chatId={chatId}
             projectId={mainProjectId}
             lastHumanMessage={lastHumanMessage}
-            isMockHuman={message.id === 'mockHuman'}
+            isMockHuman={false}
             isPlaying={isPlaying}
             setIsPlaying={handleAudioPlay}
             audioPlayingId={audioPlayingId}

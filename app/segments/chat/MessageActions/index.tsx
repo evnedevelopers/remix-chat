@@ -15,19 +15,19 @@ import { IconButton } from "~/components/uiKit/IconButton";
 
 import { copyText } from "~/helpers/copyText";
 
-import { getProjectId } from "~/store/selectors/projects.selectors";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { modalSlice } from "~/store/slices/modal.slice";
-import { projectsActions } from "~/store/actions/projects.actions";
-import { savedMessagesActions } from "~/store/actions/saved-messages.actions";
+import { getProjectId } from "~/store/bus/projects/projects.selectors";
+import { chatSlice } from "~/store/bus/chat/chat.slice";
+import { modalSlice } from "~/store/bus/modal/modal.slice";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { savedMessagesActions } from "~/store/bus/saved-messages/saved-messages.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
 type MessageActionsProps = {
-  chatId: string | null;
+  chatId: number | null;
   rate: boolean | null;
-  id: string;
+  id: number;
   message: string;
   isHuman: boolean;
   saved: string | null;
@@ -64,7 +64,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
     const values = {
       chatId,
       rate: rate === null || rateMessage !== rate ? rateMessage : null,
-      message_id: id,
+      messageId: id,
     };
 
     return new Promise((resolve, reject) => {
@@ -95,7 +95,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
             dispatch(
               savedMessagesActions.deleteSavedMessage({
                 payload: {
-                  message_id: id,
+                  messageId: id,
                   project,
                 },
               }),
@@ -122,7 +122,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
       return new Promise((resolve, reject) => {
         dispatch(
           savedMessagesActions.saveMessage({
-            payload: { message_id: id, project },
+            payload: { messageId: id, project },
             meta: { resolve, reject }
           }),
         );

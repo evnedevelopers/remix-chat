@@ -29,7 +29,7 @@ import { ActivityMonthTimeline } from "~/components/common/ActivityMonthTimeline
 
 import { getDate } from "~/helpers/getDateTime";
 
-import { IChat, IMonthChat, IYearChat } from "~/utils/typedefs";
+import { IChat, IMonthChat, IYearChat } from "~/store/bus/projects/typedefs";
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -40,13 +40,13 @@ type ActivityTimelineProps = {
   list: IYearChat[];
   title: string;
   emptyStateTitle: string;
-  handleClick: (id: string) => void;
+  handleClick: (id: number) => void;
   currentMonth: string | null;
-  currentChatId: string | null;
+  currentChatId: number | null;
   currentYear: number | null;
   isDefaultExpanded?: boolean;
   createNewChat?: () => void;
-  handleAction?: (chatId: string, name: string) => void;
+  handleAction?: (chatId: number, name: string) => void;
   isCreateChat?: boolean;
 };
 
@@ -70,14 +70,14 @@ export const ActivityTimeline: FC<ActivityTimelineProps> = ({
     isLg && isDefaultExpanded ? 'panel1' : false,
   );
   const [selectedMonths, setSelectedMonths] = useState<IMonthChat[]>([]);
-  const [yearId, setYearId] = useState('');
+  const [yearId, setYearId] = useState(0);
   const [selectedSessions, setSelectedSessions] = useState<IChat[]>([]);
   const [monthId, setMonthId] = useState('');
   const currentMonthNumber = getDate(new Date(), 'MMMM');
 
   useEffect(() => {
     if (list.length) {
-      const year = list.find((item) => item.id === currentYear?.toString());
+      const year = list.find((item) => item.id === currentYear);
       const month = year?.months.find((item) => item.id === currentMonth);
       const lastYear = list[list.length - 1];
       const lastMonth = lastYear.months[0];
@@ -94,11 +94,11 @@ export const ActivityTimeline: FC<ActivityTimelineProps> = ({
   }, [list, expanded]);
 
   const handleChange =
-    (panel: string) => (event: SyntheticEvent, isExpanded: boolean) => {
+    (panel: string) => (_: SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
 
-  const handleClickButton = (id: string) => {
+  const handleClickButton = (id: number) => {
     setExpanded(false);
     handleClick(id);
   };
@@ -106,7 +106,7 @@ export const ActivityTimeline: FC<ActivityTimelineProps> = ({
   const handleSelectYear = (
     event: MouseEvent<HTMLButtonElement>,
     months: IMonthChat[],
-    id: string,
+    id: number,
   ) => {
     event.stopPropagation();
     setSelectedMonths(months);
@@ -131,7 +131,7 @@ export const ActivityTimeline: FC<ActivityTimelineProps> = ({
     setExpandedMonth(expandedMonth === panel ? false : panel);
   };
 
-  const handleClickActionButton = (id: string, name: string) => {
+  const handleClickActionButton = (id: number, name: string) => {
     handleAction?.(id, name);
   };
 

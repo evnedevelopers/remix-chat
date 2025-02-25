@@ -1,16 +1,15 @@
 import createSagaMiddleware from "@redux-saga/core";
-import { configureStore } from "@reduxjs/toolkit";
-import { ThunkAction } from "@reduxjs/toolkit";
+import { configureStore, ThunkAction } from "@reduxjs/toolkit";
 
-import { wsSlice } from "~/store/slices/ws.slice";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { profileSlice } from "~/store/slices/profile.slice";
-import { modalSlice } from "~/store/slices/modal.slice";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { savedMessagesSlice } from "~/store/slices/saved-messages.slice";
-import { uiSlice } from "~/store/slices/ui.slice";
-import { settingsSlice } from "~/store/slices/settings.slice";
-import { aiConversationSlice } from "~/store/slices/ai-conversation.slice";
+import { wsSlice } from "~/store/bus/ws/ws.slice";
+import { projectsSlice } from "~/store/bus/projects/projects.slice";
+import { profileSlice } from "~/store/bus/profile/profile.slice";
+import { modalSlice } from "~/store/bus/modal/modal.slice";
+import { chatSlice } from "~/store/bus/chat/chat.slice";
+import { savedMessagesSlice } from "~/store/bus/saved-messages/saved-messages.slice";
+import { uiSlice } from "~/store/bus/ui/ui.slice";
+import { settingsSlice } from "~/store/bus/settings/settings.slice";
+import { aiConversationSlice } from "~/store/bus/ai-conversation/ai-conversation.slice";
 import { rootSaga } from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();

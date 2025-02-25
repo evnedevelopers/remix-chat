@@ -11,23 +11,21 @@ import { Tooltip } from "~/components/uiKit/Tooltip";
 import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { StopRecordingButton } from "~/segments/chat/StopRecordingButton";
 
-import { getIsShowAudioButtons, getProfile } from "~/store/selectors/profile.selectors";
-import { getIsChatTyping, getIsRecording } from "~/store/selectors/chat.selectors";
+import { getIsChatTyping, getIsRecording } from "~/store/bus/chat/chat.selectors";
 
 type MessageInputAudioButtonProps = {
   handleStartRecording: () => void;
-  handleStopRecording: () => Promise<any>;
+  handleStopRecording: () => Promise<void>;
 };
 
 export const MessageInputAudioButton: FC<MessageInputAudioButtonProps> = ({
   handleStartRecording,
   handleStopRecording,
 }) => {
-  const isShowButtons = useSelector(getIsShowAudioButtons);
+  const theme = useTheme();
+
   const isTyping = useSelector(getIsChatTyping);
   const isRecording = useSelector(getIsRecording);
-  const profile = useSelector(getProfile);
-  const theme = useTheme();
 
   const recording = () => {
     handleStartRecording();
@@ -43,12 +41,12 @@ export const MessageInputAudioButton: FC<MessageInputAudioButtonProps> = ({
           placement={'top'}
           id={'input'}
           zIndex={10000}
-          open={isShowButtons || !profile?.subscription}>
+        >
           <Box display={'flex'}>
             <IconButton
               onClick={recording}
               color={'secondary'}
-              disabled={isShowButtons || isTyping || !profile?.subscription}>
+              disabled={isTyping}>
               {isTyping ? (
                 <DotsAnimation />
               ) : (

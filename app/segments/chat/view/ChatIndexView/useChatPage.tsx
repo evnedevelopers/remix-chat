@@ -9,37 +9,35 @@ import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams"
 
 import { getNowDateTimeIso } from "~/helpers/getDateTime";
 
-import { useLimits } from "~/hooks/useLimits";
-
-import { IChatFile } from "~/utils/typedefs";
-
-import {
-  getCanDoAction, getCurrentDataset,
-  getShowBuyTokensModal,
-  getShowUpdatePlanToUseTokensModal
-} from "~/store/selectors/profile.selectors";
-import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/selectors/ws.selectors";
+import { getCurrentDataset } from "~/store/bus/profile/profile.selectors";
+import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/bus/ws/ws.selectors";
 import {
   getEmptyChat,
   getIsProjectsFetching,
   getProjectId,
   getProjectsMessages
-} from "~/store/selectors/projects.selectors";
-import { projectsSlice } from "~/store/slices/projects.slice";
-import { chatSlice } from "~/store/slices/chat.slice";
-import { wsActions } from "~/store/actions/ws.actions";
-import { getLoadingImageData } from "~/store/selectors/chat.selectors";
-import { projectsActions } from "~/store/actions/projects.actions";
+} from "~/store/bus/projects/projects.selectors";
+import { projectsSlice } from "~/store/bus/projects/projects.slice";
+import { chatSlice } from "~/store/bus/chat/chat.slice";
+import { wsActions } from "~/store/bus/ws/ws.actions";
+import { getLoadingImageData } from "~/store/bus/chat/chat.selectors";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { IChatFile } from "~/store/bus/chat/typedefs";
 import { AppDispatch } from "~/store";
-import { chatActions } from "~/store/actions/chat.actions";
 
 import { styles } from './styles';
 
+export type SendMessageFunction = (
+  question: string,
+  isFileContext: boolean,
+  file?: (IChatFile | null)
+) => void;
+
 export const useChatPage = (
   value: string,
-  currentChatId: string,
+  currentChatId: number,
   setValue: (value: string) => void,
-  handle: () => void,
   projectName?: string,
 ) => {
   const { chatId } = useChatParams();
@@ -56,20 +54,10 @@ export const useChatPage = (
   const projectId = useSelector(getProjectId(projectName));
   const currentDataset = useSelector(getCurrentDataset);
   const emptyChat = useSelector(getEmptyChat(currentDataset?.name ?? ''));
-  const canDoAction = useSelector(getCanDoAction);
-  const showBuyTokensModal = useSelector(getShowBuyTokensModal);
-  const showUpdatePlanToUseTokensModal = useSelector(
-    getShowUpdatePlanToUseTokensModal,
-  );
-
-  const { handleLimitExceeded } = useLimits(
-    showUpdatePlanToUseTokensModal,
-    showBuyTokensModal,
-  );
 
   useEffect(() => {
     if (!isProjectsFetching && projectsMessages === null) {
-      dispatch(chatActions.fetchMessages(chatId ? chatId : '0'));
+      dispatch(chatActions.fetchMessages(chatId ? chatId : 0));
     }
   }, [chatId, isProjectsFetching]);
 
@@ -114,16 +102,6 @@ export const useChatPage = (
     isFileContext: boolean,
     file?: IChatFile | null,
   ) => {
-    handle();
-
-    if (!canDoAction) {
-      handleLimitExceeded();
-      setValue('');
-      dispatch(projectsSlice.actions.fillGuidanceQuestion(''));
-
-      return;
-    }
-
     const handleFile = isFileContext || file?.error ? undefined : file?.id;
 
     dispatch(
@@ -186,7 +164,7 @@ export const useChatPage = (
     dispatch(projectsSlice.actions.fillGuidanceQuestion(''));
   };
 
-  const sendMessage = useCallback(
+  const sendMessage: SendMessageFunction = useCallback(
     (question: string, isFileContext: boolean, file?: IChatFile | null) => {
       if (socketStatus === 'closed') {
         enqueueSnackbar('Connection lost', {
@@ -216,14 +194,7 @@ export const useChatPage = (
 
   const handleCreateNewChat = () => {
     if (emptyChat) {
-      alert('emptyChat')
-
-      return;
-    }
-
-    if (!canDoAction) {
-      handleLimitExceeded();
-
+      alert('emptyChat');
       return;
     }
 
@@ -231,7 +202,7 @@ export const useChatPage = (
       dispatch(
         projectsActions.createNewChat({
           payload: {
-            project_id: currentDataset?.id || '',
+            projectId: currentDataset?.id || 0,
             projectName: currentDataset?.name || '',
             name: 'New Chat',
           },
@@ -239,9 +210,8 @@ export const useChatPage = (
         }),
       );
     })
-      .then((data: any) => {
+      .then(() => {
         alert("chat has been created");
-        console.log(data);
       })
       .catch();
   };

@@ -7,24 +7,32 @@ import { Box, Skeleton, Typography } from "@mui/material";
 
 import { Grid } from "~/components/common/Grid";
 
-import { getIsChatTyping } from "~/store/selectors/chat.selectors";
-import { ISuggestingQuestions } from "~/store/typedefs";
+import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
+import { SendMessageFunction} from "~/segments/chat/view/ChatIndexView/useChatPage";
+
+import { getIsChatTyping } from "~/store/bus/chat/chat.selectors";
+import { getCurrentFile } from "~/store/bus/projects/projects.selectors";
+import { ISuggestingQuestions } from "~/store/bus/chat/typedefs";
 
 import { styles } from './styles';
 
 type SuggestingQuestionsProps = {
   questions: ISuggestingQuestions;
-  handleSendMessage: (question: string) => void;
+  handleSendMessage: SendMessageFunction;
 };
 
 export const SuggestingQuestions: FC<SuggestingQuestionsProps> = ({
   questions,
   handleSendMessage,
 }) => {
+  const { chatId, projectName } = useChatParams();
+  const { isFileContext } = useSelector(
+    getCurrentFile(chatId, projectName),
+  );
   const isTyping = useSelector(getIsChatTyping);
   const handleClick = (question: string) => {
     if (!isTyping) {
-      handleSendMessage(question);
+      handleSendMessage(question, isFileContext);
     }
   };
 

@@ -5,9 +5,7 @@ import { keyframes } from '@emotion/react';
 
 import { styles } from './styles';
 
-type DotsAnimationProps = {};
-
-export const DotsAnimation: FC<DotsAnimationProps> = () => {
+export const DotsAnimation: FC = () => {
   const theme = useTheme();
 
   const typing = keyframes`

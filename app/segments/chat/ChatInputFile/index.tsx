@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
 
 import { useSnackbar } from "notistack";
 
@@ -11,18 +10,18 @@ import Close from "~/components/icons/Close";
 import AttachFile from "~/components/icons/AttachFile";
 import { IconButton } from "~/components/uiKit/IconButton";
 
-import { projectsActions } from "~/store/actions/projects.actions";
-import { getCurrentFile } from "~/store/selectors/projects.selectors";
+import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
+
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { getCurrentFile } from "~/store/bus/projects/projects.selectors";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
 
-type ChatInputFileProps = {};
-
-export const ChatInputFile: FC<ChatInputFileProps> = () => {
+export const ChatInputFile: FC = () => {
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
-  const { projectName, chatId } = useParams();
+  const { projectName, chatId = 0 } = useChatParams();
   const { file } = useSelector(getCurrentFile(chatId, projectName));
   const { enqueueSnackbar } = useSnackbar();
 
@@ -31,8 +30,8 @@ export const ChatInputFile: FC<ChatInputFileProps> = () => {
       dispatch(
         projectsActions.deleteChatFile({
           payload: {
-            fileId: file?.id || '',
-            chatId: chatId ? chatId : '',
+            fileId: file?.id || 0,
+            chatId,
           },
           meta: { resolve, reject }
         }),
@@ -58,9 +57,9 @@ export const ChatInputFile: FC<ChatInputFileProps> = () => {
             htmlColor={theme.palette.text.primary}
           />
         )}
-        {file?.file_name ? (
+        {file?.filename ? (
           <Typography variant={'body1'} color={'text.primary'} ml={'10px'}>
-            {file?.file_name}
+            {file?.filename}
           </Typography>
         ) : (
           <Skeleton
@@ -79,7 +78,7 @@ export const ChatInputFile: FC<ChatInputFileProps> = () => {
           <IconButton
             sx={styles.itemButton}
             onClick={handleDeleteFile}
-            disabled={!file?.file_name}>
+            disabled={!file?.filename}>
             <Close
               sx={{ fontSize: '20px' }}
               htmlColor={theme.palette.text.primary}

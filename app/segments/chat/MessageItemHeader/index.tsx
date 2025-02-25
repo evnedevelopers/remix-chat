@@ -10,21 +10,20 @@ import MoreVert from "~/components/icons/MoreVert";
 import { IconContainer} from "~/components/common/IconContainer";
 import { IconButton } from "~/components/uiKit/IconButton";
 
-import { getProfile } from "~/store/selectors/profile.selectors";
-
-import { IMessage } from "~/utils/typedefs";
+import { getProfile } from "~/store/bus/profile/profile.selectors";
+import { IMessage } from "~/store/bus/chat/typedefs";
 
 type MessageItemHeaderProps = {
   isHuman: boolean;
   isTypingMessage: boolean;
-  chatId: string | null;
-  id: string;
+  chatId: number | null;
+  id: number;
   rate: boolean | null;
   message: string;
   saved: string | null;
   isMockHuman: boolean;
   messageItem: IMessage;
-  projectId: string;
+  projectId: number;
 };
 
 import { styles } from './styles';
@@ -64,11 +63,11 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
             )}
           </Box>
         ) : (
-          messageItem?.project?.icon_dark &&
-          messageItem?.project?.icon_light && (
+          messageItem?.project?.iconDark &&
+          messageItem?.project?.iconLight && (
             <IconContainer
-              darkIcon={messageItem.project.icon_dark}
-              lightIcon={messageItem.project.icon_light}
+              darkIcon={messageItem.project.iconDark}
+              lightIcon={messageItem.project.iconLight}
               size={32}
             />
           )

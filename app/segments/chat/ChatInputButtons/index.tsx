@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 
 import { Box } from '@mui/material';
@@ -9,17 +9,19 @@ import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams"
 import { CreateChatButton } from "~/segments/chat/CreateChatButton";
 import { Guidance } from "~/segments/home/Guidance";
 import { ChatInputFile } from "~/segments/chat/ChatInputFile";
+import { SendMessageFunction } from "~/segments/chat/view/ChatIndexView/useChatPage";
 
-import { getCurrentFile, getCurrentProject, getIsWaiting, getWaitingProject } from "~/store/selectors/projects.selectors";
-import { getCurrentDataset } from "~/store/selectors/profile.selectors";
+import { getCurrentFile, getCurrentProject, getIsWaiting, getWaitingProject } from "~/store/bus/projects/projects.selectors";
+import { getCurrentDataset } from "~/store/bus/profile/profile.selectors";
+import { IMessage } from "~/store/bus/chat/typedefs";
 
 type ChatInputButtonsProps = {
-  currentChatId: string;
+  currentChatId: number;
   value: string;
-  projectsMessages: any;
-  setValue: any;
-  sendMessage: any;
-  scrollToBottom: any;
+  projectsMessages: IMessage[];
+  setValue: Dispatch<SetStateAction<string>>;
+  sendMessage: SendMessageFunction;
+  scrollToBottom: () => void;
 };
 
 export const ChatInputButtons: FC<ChatInputButtonsProps> = ({
@@ -31,7 +33,7 @@ export const ChatInputButtons: FC<ChatInputButtonsProps> = ({
   scrollToBottom,
 }) => {
   const { projectName, chatId } = useChatParams();
-  const { file, is_file_context } = useSelector(
+  const { file, isFileContext } = useSelector(
     getCurrentFile(chatId, projectName),
   );
   const isWaiting = useSelector(getIsWaiting(chatId));
@@ -56,7 +58,7 @@ export const ChatInputButtons: FC<ChatInputButtonsProps> = ({
   }, [chatId]);
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setTimeout>;
 
     if (isWaiting) {
       setAnimateOut(true);
@@ -104,7 +106,7 @@ export const ChatInputButtons: FC<ChatInputButtonsProps> = ({
           <CreateChatButton
             matchingProject={
               waitingProject?.chats.find((chat) => chat.id === currentChatId)
-                ?.messages?.results[0]?.project
+                ?.messages?.results[0]?.project as IMessage['project']
             }
             value={value}
             projectsMessages={projectsMessages}
@@ -123,7 +125,7 @@ export const ChatInputButtons: FC<ChatInputButtonsProps> = ({
               ? { animation: `${slideDown} 0.3s ease forwards` }
               : {}),
           }}>
-          {file?.id && !is_file_context && <ChatInputFile />}
+          {file?.id && !isFileContext && <ChatInputFile />}
           <Guidance currentProject={currentDataset} isChatPage />
           <MessageInput
             value={value}

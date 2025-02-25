@@ -11,9 +11,9 @@ import Visibility from "~/components/icons/Visibility";
 
 import { ratioSplitting } from "~/helpers/ratioSplitting";
 
-import { getScaleImage } from "~/store/selectors/profile.selectors";
-import { getIsImageLoading } from "~/store/selectors/chat.selectors";
-import { profileActions } from "~/store/actions/profile.actions";
+import { getScaleImage } from "~/store/bus/profile/profile.selectors";
+import { getIsImageLoading } from "~/store/bus/chat/chat.selectors";
+import { profileActions } from "~/store/bus/profile/profile.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -21,10 +21,10 @@ import { styles } from './styles';
 type MessageImageItemProps = {
   id: string;
   image: string;
-  short_image: string;
+  shortImage: string;
   isError: string;
   ratio?: string | null;
-  chatId: string;
+  chatId: number;
   separator?: string;
   isDeleted?: boolean;
 };
@@ -35,7 +35,7 @@ export const MessageImageItem: FC<MessageImageItemProps> = ({
   isError,
   ratio = '16:9',
   chatId,
-  short_image,
+  shortImage,
   separator = ':',
   isDeleted = false,
 }) => {
@@ -61,7 +61,7 @@ export const MessageImageItem: FC<MessageImageItemProps> = ({
         image,
         ratio,
         chatId,
-        short_image,
+        shortImage,
         separator,
         type: '',
         isShare: false,

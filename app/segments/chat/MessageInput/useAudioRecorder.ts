@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { handleErrors } from "~/helpers/handleErrors";
 
-import { getProfile } from "~/store/selectors/profile.selectors";
-import { getIsGlobalSpeaking } from "~/store/selectors/ui.selectors";
-import { getSettings } from "~/store/selectors/settings.selectors";
-import { chatActions } from "~/store/actions/chat.actions";
-import { modalActions } from "~/store/actions/modal.actions";
+import { getIsGlobalSpeaking } from "~/store/bus/ui/ui.selectors";
+import { getSettings } from "~/store/bus/settings/settings.selectors";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { modalActions } from "~/store/bus/modal/modal.actions";
 
 export const getValidToken = async () => '';
 export const removeQuotes = (str: string) => str.replace(/^"(.*)"$/, '$1');
@@ -15,21 +14,20 @@ export const removeQuotes = (str: string) => str.replace(/^"(.*)"$/, '$1');
 export const useAudioRecorder = (scrollToBottom: () => void) => {
   const dispatch = useDispatch();
   const [recording, setRecording] = useState(false);
-  const profile = useSelector(getProfile);
   const settings = useSelector(getSettings);
   const chunksRef = useRef<Blob[]>([]);
   const globalSpeaking = useSelector(getIsGlobalSpeaking);
   const countRef = useRef(0);
   const [isMicrophoneAllowed, setMicrophoneAllowed] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const stopTimeoutRef = useRef<any>(null);
+  const stopTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const shouldSendToServerRef = useRef(true);
 
   useEffect(() => {
     if (settings) {
-      countRef.current = settings?.audio_recording_limit;
+      countRef.current = settings?.audioRecordingLimit;
     }
   }, [settings]);
 
@@ -118,7 +116,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
         dispatch(chatActions.stopRecording());
       }
       if (settings) {
-        countRef.current = settings?.audio_recording_limit;
+        countRef.current = settings?.audioRecordingLimit;
       }
       shouldSendToServerRef.current = true;
     };
@@ -187,7 +185,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
     }
     navigator.mediaDevices
       .getUserMedia({ audio: true })
-      .then((stream) => {
+      .then(() => {
         setMicrophoneAllowed(true);
 
         dispatch(chatActions.startRecording());

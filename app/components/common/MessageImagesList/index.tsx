@@ -4,11 +4,12 @@ import { Grid } from "~/components/common/Grid";
 import { MessageImageItem } from "~/components/common/MessageImageItem";
 
 import { ratioSplitting } from "~/helpers/ratioSplitting";
+import { IMessageImage } from "~/store/bus/chat/typedefs";
 
 import { styles } from './styles';
 
 type MessageImagesListProps = {
-  images: any[];
+  images: IMessageImage[];
   isSharing?: boolean;
 };
 
@@ -19,7 +20,7 @@ export const MessageImagesList: FC<MessageImagesListProps> = ({
   return (
     <Grid container columnSpacing={'20px'} rowSpacing={'20px'}>
       {images.map((image) => {
-        const [widthRatio, heightRatio] = ratioSplitting(image.ratio);
+        const [widthRatio, heightRatio] = ratioSplitting(image.ratio!);
 
         return (
           <Grid
@@ -34,13 +35,13 @@ export const MessageImagesList: FC<MessageImagesListProps> = ({
               isSharing && styles.sharing,
             ]}>
             <MessageImageItem
-              id={image.id}
-              image={image.image}
-              isError={image.error}
+              id={image.id as string}
+              image={image.image!}
+              isError={image.error as string}
               ratio={image.ratio}
-              chatId={image.chat_id}
-              short_image={image.short_image}
-              isDeleted={!!image.deleted_at}
+              chatId={image.chatId!}
+              shortImage={image.shortImage!}
+              isDeleted={!!image.deletedAt}
             />
           </Grid>
         );

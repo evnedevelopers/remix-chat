@@ -4,7 +4,7 @@ import { Box, Typography, useTheme } from "@mui/material";
 
 import AttachFile from "~/components/icons/AttachFile";
 
-import { IChatFile } from "~/utils/typedefs";
+import { IChatFile } from "~/store/bus/chat/typedefs";
 
 import { styles } from './styles';
 
@@ -23,7 +23,7 @@ export const MessageItemFile: FC<MessageItemFileProps> = ({ file }) => {
           htmlColor={theme.palette.text.primary}
         />
         <Typography variant={'body1'} color={'text.primary'} ml={'10px'}>
-          {file.file_name}
+          {file.filename}
         </Typography>
       </Box>
     </Box>

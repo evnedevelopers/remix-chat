@@ -11,7 +11,7 @@ import {
 
 import Edit from "~/components/icons/Edit";
 
-import { IChat } from "~/utils/typedefs";
+import { IChat } from "~/store/bus/projects/typedefs";
 
 import { styles } from './styles';
 
@@ -19,9 +19,9 @@ type ActivityChatTimelineProps = {
   session: IChat;
   closeSidebar?: () => void;
   monthId: string;
-  yearId: string;
-  handleClick: (id: string) => void;
-  currentChatId: string | null;
+  yearId: number;
+  handleClick: (id: number) => void;
+  currentChatId: number | null;
   handleAction?: () => void;
 };
 

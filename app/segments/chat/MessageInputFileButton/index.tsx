@@ -10,24 +10,23 @@ import { getValidToken, removeQuotes } from "~/segments/chat/MessageInput/useAud
 
 import { handleErrors } from "~/helpers/handleErrors";
 
-import { getIsChatTyping } from "~/store/selectors/chat.selectors";
-import { projectsSlice } from "~/store/slices/projects.slice";
-
-import { IChatFile } from "~/utils/typedefs";
+import { getIsChatTyping } from "~/store/bus/chat/chat.selectors";
+import { projectsSlice } from "~/store/bus/projects/projects.slice";
+import { IChatFile } from "~/store/bus/chat/typedefs";
 
 type MessageInputFileButtonProps = {
-  chatId?: string;
+  chatId?: number;
   file: IChatFile | null;
 };
 
 export const MessageInputFileButton: FC<MessageInputFileButtonProps> = ({
-  chatId,
+  chatId = 0,
   file,
 }) => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isTyping = useSelector(getIsChatTyping);
-  const theme = useTheme();
 
   const save = async (files: File[]) => {
     if (files.length > 0) {
@@ -39,18 +38,16 @@ export const MessageInputFileButton: FC<MessageInputFileButtonProps> = ({
         dispatch(
           projectsSlice.actions.fillChatFile({
             data: {
-              id: '1',
+              id: 1,
               file: '',
-              created_at: '',
-              file_name: '',
+              createdAt: '',
+              filename: '',
             },
-            chatId: chatId || '',
+            chatId
           }),
         );
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/chats/${
-            chatId ? +chatId : 0
-          }/files`,
+          `${process.env.REACT_APP_API_URL}/chats/${chatId}/files`,
           {
             method: 'POST',
             body: formData,
@@ -66,20 +63,20 @@ export const MessageInputFileButton: FC<MessageInputFileButtonProps> = ({
           dispatch(
             projectsSlice.actions.fillChatFile({
               data: {
-                id: '1',
+                id: 1,
                 file: '',
-                created_at: '',
-                file_name: data.error,
+                createdAt: '',
+                filename: data.error,
                 error: true,
               },
-              chatId: chatId || '',
+              chatId,
             }),
           );
         } else {
           dispatch(
             projectsSlice.actions.fillChatFile({
               data,
-              chatId: chatId || '',
+              chatId,
             }),
           );
         }

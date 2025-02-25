@@ -6,7 +6,7 @@ import KeyboardArrowDown from "~/components/icons/KeyboardArrowDown";
 import ChatBubbleOutline from "~/components/icons/ChatBubbleOutline";
 import { GuidanceItem } from "~/components/common/GuidanceItem";
 
-import { IProjects } from "~/utils/typedefs";
+import { IProjects } from "~/store/bus/projects/typedefs";
 
 import { styles } from './styles';
 
@@ -22,7 +22,7 @@ export const Guidance: FC<GuidanceProps> = ({
   const theme = useTheme();
   const [expand, setExpand] = useState(false);
 
-  const swiperRef = useRef<any>(null);
+  const swiperRef = useRef<{update: () => void}>(null);
 
   useEffect(() => {
     if (swiperRef.current) {
@@ -60,9 +60,9 @@ export const Guidance: FC<GuidanceProps> = ({
                     <GuidanceItem
                       text={guide.text}
                       title={guide.title}
-                      subGuide={guide.sub_guidances}
-                      isRead={guide.is_read}
-                      guidance_id={guide.id}
+                      subGuide={guide.subGuidances}
+                      isRead={guide.isRead}
+                      guidanceId={guide.id}
                       handleClick={() => setExpand(!expand)}
                     />
                   </Box>

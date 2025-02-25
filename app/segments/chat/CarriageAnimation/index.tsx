@@ -5,10 +5,9 @@ import { keyframes } from '@emotion/react';
 
 import { styles } from './styles';
 
-type CarriageAnimationProps = {};
-
-export const CarriageAnimation: FC<CarriageAnimationProps> = () => {
+export const CarriageAnimation: FC = () => {
   const theme = useTheme();
+
   const color = theme.palette.text.primary;
   const typing = keyframes`
   from {

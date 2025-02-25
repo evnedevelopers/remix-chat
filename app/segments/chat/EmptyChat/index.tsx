@@ -5,7 +5,7 @@ import { Box, Typography, useTheme } from '@mui/material';
 
 import Chat2 from '~/components/icons/Chat2';
 
-import { getCurrentDescription } from "~/store/selectors/projects.selectors";
+import { getCurrentDescription } from "~/store/bus/projects/projects.selectors";
 
 import { styles } from './styles';
 
@@ -16,6 +16,7 @@ type EmptyChatProps = {
 
 export const EmptyChat: FC<EmptyChatProps> = ({ projectName, size }) => {
   const theme = useTheme();
+
   const description = useSelector(getCurrentDescription(projectName));
 
   return (
