@@ -1,1 +1,1 @@
-export { loader } from "server/route-actions/auth/logout";
+export { loader } from "../../server/http/route-actions/auth/logout";

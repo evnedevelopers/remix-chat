@@ -8,7 +8,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export { loader, action } from "server/route-actions/home";
+export { loader, action } from "../../server/http/route-actions/home";
 
 export default function Index() {
   return (

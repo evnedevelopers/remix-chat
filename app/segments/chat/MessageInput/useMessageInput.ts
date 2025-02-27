@@ -11,14 +11,13 @@ import lightRecording from '~/assets/Flow 1.json';
 import { getTheme } from "~/store/bus/ui/ui.selectors";
 import {
   getConvertedText,
-  getIsChatTyping,
   getIsProcessing,
   getIsRecording,
   getIsVoiceDetected
 } from "~/store/bus/chat/chat.selectors";
 import { getIsFileFetching } from "~/store/bus/projects/projects.selectors";
-import {IChatFile} from "~/store/bus/chat/typedefs";
-import {ThemeVariant} from "~/store/bus/ui/typedefs";
+import { IChatFile } from "~/store/bus/chat/typedefs";
+import { ThemeVariant } from "~/store/bus/ui/typedefs";
 
 export const useMessageInput = (
   setValue: Dispatch<SetStateAction<string>>,
@@ -33,7 +32,6 @@ export const useMessageInput = (
 ) => {
   const themes = useSelector(getTheme);
   const convertedText = useSelector(getConvertedText);
-  const isTyping = useSelector(getIsChatTyping);
   const [animation, setAnimation] = useState<Record<string, unknown>>();
   const isRecording = useSelector(getIsRecording);
   const isProcessing = useSelector(getIsProcessing);
@@ -61,7 +59,6 @@ export const useMessageInput = (
     if (e.key === 'Enter' && !(isTablet || isMobile)) {
       e.preventDefault();
       !!value.trim().length &&
-      !isTyping &&
       handleSendMessage(value, isFileContext, file);
     }
   };

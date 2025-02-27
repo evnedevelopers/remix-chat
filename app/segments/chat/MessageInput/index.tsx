@@ -15,13 +15,13 @@ import { IconButton } from "~/components/uiKit/IconButton";
 import { useMessageInput } from "~/segments/chat/MessageInput/useMessageInput";
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 import { useAudioRecorder } from "~/segments/chat/MessageInput/useAudioRecorder";
-import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { MessageInputFileButton } from "~/segments/chat/MessageInputFileButton";
 import { MessageInputAudioButton } from "~/segments/chat/MessageInputAudioButton";
 
 import { getCurrentFile, getIsFileFetching } from "~/store/bus/projects/projects.selectors";
-import { getIsChatTyping, getIsProcessing, getIsRecording } from "~/store/bus/chat/chat.selectors";
+import { getIsProcessing, getIsRecording } from "~/store/bus/chat/chat.selectors";
 import { IChatFile } from "~/store/bus/chat/typedefs";
+import { useUserTyping } from "~/segments/chat/MessageInput/useUserTyping";
 
 import { styles } from './styles';
 
@@ -47,7 +47,6 @@ export const MessageInput: FC<MessageInputProps> = ({
   const { file, isFileContext } = useSelector(
     getCurrentFile(chatId, projectName),
   );
-  const isTyping = useSelector(getIsChatTyping);
   const isRecording = useSelector(getIsRecording);
   const isProcessing = useSelector(getIsProcessing);
   const isFileFetching = useSelector(getIsFileFetching);
@@ -60,6 +59,8 @@ export const MessageInput: FC<MessageInputProps> = ({
   const handleClick = () => {
     handleSendMessage(value, isFileContext, file);
   };
+
+  const { handleUserTyping } = useUserTyping();
 
   const {
     handleStartRecording,
@@ -132,6 +133,7 @@ export const MessageInput: FC<MessageInputProps> = ({
                   value={value}
                   onChange={handleChange}
                   onKeyDown={handleKeyPress}
+                  onInput={handleUserTyping}
                 />
               )}
             </Box>
@@ -149,17 +151,12 @@ export const MessageInput: FC<MessageInputProps> = ({
                       color={'secondary'}
                       disabled={
                         isFileFetching ||
-                        isTyping ||
                         !value.trim().length
                       }>
-                      {isTyping ? (
-                        <DotsAnimation />
-                      ) : (
-                        <Send
-                          fontSize={'small'}
-                          htmlColor={theme.palette.text.primary}
-                        />
-                      )}
+                      <Send
+                        fontSize={'small'}
+                        htmlColor={theme.palette.text.primary}
+                      />
                     </IconButton>
                   </Box>
                 </Tooltip>

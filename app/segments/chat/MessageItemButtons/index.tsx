@@ -22,7 +22,6 @@ import { styles } from './styles';
 type MessageItemButtonsProps = {
   messageItem: IMessage;
   isICreator: boolean;
-  isTypingMessage: boolean;
   isActiveAudio: boolean;
   isPlaying: boolean;
   isLoading: boolean;
@@ -41,7 +40,6 @@ export const MessageItemButtons = forwardRef<
     {
       messageItem,
       isICreator,
-      isTypingMessage,
       isActiveAudio,
       isPlaying,
       setAudioLoadingId,
@@ -75,7 +73,7 @@ export const MessageItemButtons = forwardRef<
     return (
       <Box sx={styles.messageItemButtons}>
         <Box display={'flex'} alignItems={'center'} gap={'10px'}>
-          {!isICreator && messageItem.type !== 'error' && !isTypingMessage && (
+          {!isICreator && messageItem.type !== 'error' && (
             <Tooltip
               title={<UpgradeTooltip />}
               placement={'right'}
@@ -108,7 +106,7 @@ export const MessageItemButtons = forwardRef<
               </Box>
             </Tooltip>
           )}
-          {!isICreator && messageItem.type !== 'error' && !isTypingMessage && (
+          {!isICreator && messageItem.type !== 'error' && (
             <Tooltip
               title={<UpgradeTooltip />}
               placement={'right'}

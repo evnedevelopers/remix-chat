@@ -5,6 +5,8 @@ import express from "express";
 import morgan from "morgan";
 import http from "http";
 import { Server } from "socket.io";
+import { wsRouter } from "./ws/router";
+import { MessageData } from "./ws/actions/ws-base-socket-action";
 
 const viteDevServer =
   process.env.NODE_ENV === "production"
@@ -27,18 +29,9 @@ io?.on("connection", (socket) => {
     console.log(`Socket ${socket.id} joined chat ${chatId}`);
   });
 
-  socket.on("message", (data) => {
-    console.log(data);
-  })
-
-  socket.on("sendMessage", (payload) => {
-    console.log("Send message: ", {
-      clientId: socket.id,
-      payload
-    });
-
-    io.to(payload.chatId).emit("receiveMessage", payload);
-  })
+  socket.on("message", async (data: MessageData) => {
+    await wsRouter.handleMessageAction(data, socket as never, io);
+  });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected:", socket.id);

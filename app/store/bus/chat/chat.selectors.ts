@@ -5,7 +5,7 @@ import { RootState } from "~/store";
 const chatSelectors = (state: RootState) => state.chat;
 
 export const getIsChatTyping = createSelector([chatSelectors], (result) => {
-  return result.isTyping;
+  return !!result.isTyping.length;
 });
 
 export const getIsImageLoading = createSelector([chatSelectors], (result) => {

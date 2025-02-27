@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
-import { AuthService } from "server/services/auth/auth.service";
+import { AuthService } from "../../services/auth/auth.service";
 import { MiddlewareFunction } from "./typedefs";
 
 export const isAuthenticateWithRedirect: MiddlewareFunction<ActionFunctionArgs> = async (args) => {

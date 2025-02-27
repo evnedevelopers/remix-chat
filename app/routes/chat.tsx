@@ -26,7 +26,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export { loader } from "server/route-actions/chat";
+export { loader } from "../../server/http/route-actions/chat";
 
 export default function ChatIndex() {
   const dispatch = useDispatch<AppDispatch>();

@@ -1,7 +1,7 @@
 import { RouteAction } from "../route-action";
 import { json, LoaderFunction } from "@remix-run/node";
 import { isAuthenticateWithRedirect } from "../../middlewares/is-authenticate-with-redirect.middleware";
-import { ProjectService } from "../../services/project/project.service";
+import { ProjectService } from "../../../services/project/project.service";
 
 export interface ILoaderFunctionResult {
   authUser: { id: number; };
@@ -25,7 +25,7 @@ export const loader: LoaderFunction = new RouteAction()
         return json({
           authUser: request.authUser,
           projects,
-          messages: messages[0],
+          messages,
         } as ILoaderFunctionResult);
       }
     }

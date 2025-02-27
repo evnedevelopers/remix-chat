@@ -24,7 +24,7 @@ export const MessageInputAudioButton: FC<MessageInputAudioButtonProps> = ({
 }) => {
   const theme = useTheme();
 
-  const isTyping = useSelector(getIsChatTyping);
+
   const isRecording = useSelector(getIsRecording);
 
   const recording = () => {
@@ -46,15 +46,11 @@ export const MessageInputAudioButton: FC<MessageInputAudioButtonProps> = ({
             <IconButton
               onClick={recording}
               color={'secondary'}
-              disabled={isTyping}>
-              {isTyping ? (
-                <DotsAnimation />
-              ) : (
-                <MicNone
-                  fontSize={'small'}
-                  htmlColor={theme.palette.text.primary}
-                />
-              )}
+              >
+              <MicNone
+                fontSize={'small'}
+                htmlColor={theme.palette.text.primary}
+              />
             </IconButton>
           </Box>
         </Tooltip>

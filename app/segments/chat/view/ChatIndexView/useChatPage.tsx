@@ -7,9 +7,8 @@ import { Button, Typography } from "@mui/material";
 
 import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 
-import { getNowDateTimeIso } from "~/helpers/getDateTime";
 
-import { getCurrentDataset } from "~/store/bus/profile/profile.selectors";
+import { getCurrentDataset, getProfile } from "~/store/bus/profile/profile.selectors";
 import { getIsClosedSockets, getIsOpenedSockets, getSocketOpened } from "~/store/bus/ws/ws.selectors";
 import {
   getEmptyChat,
@@ -52,6 +51,7 @@ export const useChatPage = (
   const isProjectsFetching = useSelector(getIsProjectsFetching);
   const loadingImageData = useSelector(getLoadingImageData);
   const projectId = useSelector(getProjectId(projectName));
+  const profile = useSelector(getProfile);
   const currentDataset = useSelector(getCurrentDataset);
   const emptyChat = useSelector(getEmptyChat(currentDataset?.name ?? ''));
 
@@ -112,52 +112,19 @@ export const useChatPage = (
           event: 'message',
           data: {
             query: question.split('\n').join('<br>'),
-            project_id: projectId,
-            chat_id: currentChatId,
+            projectId: projectId,
+            authorId: profile!.id,
+            chatId: currentChatId,
+            projectName,
             continue: null,
-            dataset_matching: true,
-            file_id: handleFile,
+            datasetMatching: true,
+            fileId: handleFile,
           },
         },
         meta: {}
       }),
     );
-    const newMessage = {
-      id: 'mockHuman',
-      text: question.split('\n').join('<br>'),
-      author: { id: 'human' },
-      created_at: getNowDateTimeIso() + '',
-      message_rate: null,
-      project: {},
-      show_create_chat_message: false,
-      images: [],
-      files: handleFile ? [file] : [],
-    };
-    const newAiMessage = {
-      id: 'mock',
-      text: '',
-      author: { id: 'ai' },
-      created_at: getNowDateTimeIso() + '',
-      message_rate: null,
-      project: {
-        icon_light: '',
-        icon_dark: '',
-      },
-      show_create_chat_message: false,
-      images: [],
-      files: [],
-    };
-    dispatch(
-      projectsSlice.actions.setMessages({
-        chatId: currentChatId,
-        projectsMessages: [
-          newAiMessage,
-          newMessage,
-          ...(projectsMessages?.results ?? []),
-        ],
-      }),
-    );
-    dispatch(chatSlice.actions.setMessageId('mock'));
+
     scrollToBottom('anchor');
 
     setValue('');

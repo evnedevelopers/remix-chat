@@ -6,15 +6,15 @@ import { Box, Button, Typography, useTheme } from "@mui/material";
 import Plus from "~/components/icons/Plus";
 import { IconContainer } from "~/components/common/IconContainer";
 
-import { getNowDateTimeIso } from "~/helpers/getDateTime";
+import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 
 import { getCurrentProject } from "~/store/bus/projects/projects.selectors";
 
 import { wsActions } from "~/store/bus/ws/ws.actions";
 import { projectsActions } from "~/store/bus/projects/projects.actions";
-import { chatActions } from "~/store/bus/chat/chat.actions";
 import { profileActions } from "~/store/bus/profile/profile.actions";
 import { IMessage } from "~/store/bus/chat/typedefs";
+import { getProfile } from "~/store/bus/profile/profile.selectors";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -39,8 +39,10 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   const theme = useTheme();
 
   const dispatch = useDispatch<AppDispatch>();
+  const { projectName } = useChatParams();
   const [lastQuestion, setLastQuestion] = useState('');
   const project = useSelector(getCurrentProject(matchingProject?.name));
+  const profile = useSelector(getProfile);
 
   useEffect(() => {
     setLastQuestion(
@@ -51,7 +53,6 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
   const handleSendMessage = (
     chatId: number,
     projectId: number,
-    projectsMessages: IMessage[],
     matching: boolean,
   ) => {
     dispatch(projectsActions.fillMatchingProject(null));
@@ -64,7 +65,9 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
           data: {
             query: (value || lastQuestion).split('\n').join('<br>'),
             projectId: projectId,
+            authorId: profile!.id,
             chatId: chatId,
+            projectName,
             datasetMatching: matching,
             continue: null,
           },
@@ -72,36 +75,6 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
         meta: {}
       }),
     );
-    const newMessage = {
-      id: 'mockHuman',
-      text: (value || lastQuestion).split('\n').join('<br>'),
-      author: { id: 'human' },
-      createdAt: getNowDateTimeIso() + '',
-      messageRate: null,
-      project: {},
-      images: [],
-      files: [],
-    };
-    const newAiMessage = {
-      id: 'mock',
-      text: '',
-      author: { id: 'ai' },
-      createdAt: getNowDateTimeIso() + '',
-      messageRate: null,
-      project: {
-        iconLight: '',
-        iconDark: '',
-      },
-      images: [],
-      files: [],
-    };
-    dispatch(
-      projectsActions.setMessages({
-        chatId,
-        projectsMessages: [newAiMessage, newMessage, ...projectsMessages],
-      }),
-    );
-    dispatch(chatActions.setMessageId('mock'));
     setValue('');
     new Promise((resolve, reject) => {
       dispatch(
@@ -135,14 +108,14 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       );
     })
       .then((data) => {
-        handleSendMessage((data as { id: number }).id, matchingProject?.id, [], true);
+        handleSendMessage((data as { id: number }).id, matchingProject?.id, true);
         dispatch(profileActions.setCurrentDataset(project));
       })
       .catch();
   };
 
   const continueSibyl = () => {
-    handleSendMessage(currentChatId, currentProjectId, projectsMessages, false);
+    handleSendMessage(currentChatId, currentProjectId, false);
   };
 
   return (

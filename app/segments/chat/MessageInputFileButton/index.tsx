@@ -26,7 +26,6 @@ export const MessageInputFileButton: FC<MessageInputFileButtonProps> = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isTyping = useSelector(getIsChatTyping);
 
   const save = async (files: File[]) => {
     if (files.length > 0) {
@@ -123,7 +122,7 @@ export const MessageInputFileButton: FC<MessageInputFileButtonProps> = ({
         <IconButton
           onClick={handleButtonClick}
           color={'secondary'}
-          disabled={isTyping}>
+        >
           <AttachFile
             fontSize={'small'}
             htmlColor={theme.palette.text.primary}

@@ -77,9 +77,19 @@ export class ProjectService {
     userId: number,
     chatId: number
   }) {
-    await this.findUserChat({ userId, chatId })
+    await this.findUserChat({ userId, chatId });
+    const messages = await this.findChatMessages(chatId);
 
-    return this.findChatMessages(chatId);
+    if (!messages.length) return { results: [], status: true, count: 0 };
+
+    return messages.map((message) => {
+      return {
+        ...message,
+        results: [ ...message.results as { createdAt: string }[] ].sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ),
+      }
+    })[0];
   }
 
   static async findUserChat({
@@ -111,6 +121,8 @@ export class ProjectService {
         id: messagesTable.id,
         text: messagesTable.text,
         createdAt: messagesTable.createdAt,
+        files: sql`'[]'::json`,
+        images: sql`'[]'::json`,
         author: sql`
           json_build_object(
             'id', ${usersTable.id},

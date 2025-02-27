@@ -12,18 +12,18 @@ import { SuggestingQuestions } from "~/segments/chat/SuggestingQuestions";
 import { MessageTimeBadge } from "~/segments/chat/MessageTimeBadge";
 import { MessageItemHeader } from "~/segments/chat/MessageItemHeader";
 import { MessageItemButtons } from "~/segments/chat/MessageItemButtons";
-import { CarriageAnimation } from "~/segments/chat/CarriageAnimation";
 import { MessageItemFile } from "~/segments/chat/MessageItemFile";
 import { SendMessageFunction } from "~/segments/chat/view/ChatIndexView/useChatPage";
+import { useChatParams } from "~/segments/chat/view/ChatIndexView/useChatParams";
 
 import { getIsSameDay } from "~/helpers/getDateTime";
 
-import { getIsChatTyping } from "~/store/bus/chat/chat.selectors";
 import { getIsGlobalSpeaking } from "~/store/bus/ui/ui.selectors";
 import { chatActions } from "~/store/bus/chat/chat.actions";
 import { projectsActions } from "~/store/bus/projects/projects.actions";
 import { wsActions } from "~/store/bus/ws/ws.actions";
 import { IMessage } from "~/store/bus/chat/typedefs";
+import { getProfile } from "~/store/bus/profile/profile.selectors";
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
@@ -31,7 +31,6 @@ import { styles } from './styles';
 type MessageItemProps = {
   isICreator: boolean;
   nextDate?: string;
-  isTypingMessage: boolean;
   isMockHuman: boolean;
   id: number;
   chatId: number | null;
@@ -52,7 +51,6 @@ type MessageItemProps = {
 export const MessageItem: FC<MessageItemProps> = ({
   isICreator,
   nextDate,
-  isTypingMessage,
   id,
   chatId,
   projectId,
@@ -68,17 +66,18 @@ export const MessageItem: FC<MessageItemProps> = ({
   lastHumanMessage
 }) => {
   const theme = useTheme();
-  const isTyping = useSelector(getIsChatTyping);
+  const { projectName } = useChatParams();
+
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const globalSpeaking = useSelector(getIsGlobalSpeaking);
+  const profile = useSelector(getProfile);
 
   const timeBadge = !getIsSameDay(messageItem.createdAt, nextDate);
 
   const handleResendRequest = () => {
-    dispatch(chatActions.setMessageId(id));
     dispatch(projectsActions.updateErrorMessage({ id, chatId: chatId || undefined }));
     dispatch(
       wsActions.sendMessageRequest({
@@ -88,10 +87,12 @@ export const MessageItem: FC<MessageItemProps> = ({
           event: 'message',
           data: {
             query: lastHumanMessage,
-            project_id: projectId,
+            projectId: projectId,
             continue: null,
-            chat_id: chatId,
-            dataset_matching: true,
+            authorId: profile!.id,
+            chatId: chatId,
+            projectName,
+            datasetMatching: true,
           },
         },
         meta: {}
@@ -174,7 +175,6 @@ export const MessageItem: FC<MessageItemProps> = ({
       <Box display={'flex'} sx={[isICreator && styles.human]}>
         <Box sx={[styles.messageItem, !isICreator ? styles.messageItemAi : {}]}>
           <MessageItemHeader
-            isTypingMessage={isTypingMessage}
             chatId={chatId}
             rate={messageItem.messageRate}
             id={id}
@@ -202,7 +202,6 @@ export const MessageItem: FC<MessageItemProps> = ({
                     : theme.palette.text.primary
                 }>
                 {parse(fixUnclosedTags(messageItem.text || ''))}{' '}
-                {isTypingMessage && isTyping && <CarriageAnimation />}
               </Typography>
             </Box>
             {!isICreator && messageItem.suggestingQuestions && (
@@ -224,7 +223,6 @@ export const MessageItem: FC<MessageItemProps> = ({
               ref={buttonRef}
               messageItem={messageItem}
               isICreator={isICreator}
-              isTypingMessage={isTypingMessage}
               isActiveAudio={audioPlayingId === id}
               isPlaying={isPlaying}
               setAudioLoadingId={setAudioLoadingId}
@@ -238,7 +236,6 @@ export const MessageItem: FC<MessageItemProps> = ({
               <Button
                 variant={'secondary'}
                 sx={styles.button}
-                disabled={isTyping}
                 onClick={handleContinueRequest}>
                 <Typography variant={'button'} color={'text.primary'}>
                   Continue answering
@@ -249,7 +246,6 @@ export const MessageItem: FC<MessageItemProps> = ({
               <Box alignSelf={'center'}>
                 <Button
                   variant={'primary'}
-                  disabled={isTyping}
                   sx={{ maxWidth: '163px', mt: '20px' }}
                   onClick={handleResendRequest}>
                   <Typography variant={'button'}>Resend Request</Typography>

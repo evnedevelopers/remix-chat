@@ -15,7 +15,6 @@ import { IMessage } from "~/store/bus/chat/typedefs";
 
 type MessageItemHeaderProps = {
   isICreator: boolean;
-  isTypingMessage: boolean;
   chatId: number | null;
   id: number;
   rate: boolean | null;
@@ -30,7 +29,6 @@ import { styles } from './styles';
 
 export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
   isICreator,
-  isTypingMessage,
   chatId,
   id,
   rate,
@@ -100,9 +98,9 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
           },
           isOpen && { width: '194px' },
         ]}
-        onMouseEnter={() => setIsOpen(!isTypingMessage)}
+        onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}>
-        <IconButton disabled={isTypingMessage} sx={styles.button}>
+        <IconButton sx={styles.button}>
           <MoreVert
             sx={{ fontSize: '16px' }}
             htmlColor={theme.palette.text.primary}

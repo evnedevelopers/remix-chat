@@ -1,6 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { RouteAction } from "../route-action";
-import { AuthService } from "../../services/auth/auth.service";
+import { AuthService } from "../../../services/auth/auth.service";
 
 export const loader: LoaderFunction = new RouteAction()
   .addMethod({

@@ -1,6 +1,6 @@
 import { json, LoaderFunction } from "@remix-run/node";
-import { RouteAction } from "../../server/route-actions/route-action";
-import { isAuthenticateMiddleware } from "../../server/middlewares/is-authenticate.middleware";
+import { RouteAction } from "../../server/http/route-actions/route-action";
+import { isAuthenticateMiddleware } from "../../server/http/middlewares/is-authenticate.middleware";
 
 export const loader: LoaderFunction = new RouteAction()
   .addMethod({

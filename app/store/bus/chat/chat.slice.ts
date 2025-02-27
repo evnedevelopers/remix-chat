@@ -6,7 +6,7 @@ export const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     isFetching: false,
-    isTyping: false,
+    isTyping: [] as number[],
     isImageLoading: false,
     chats: [] as IChat[],
     messages: null as IMessages | null,
@@ -76,12 +76,8 @@ export const chatSlice = createSlice({
     removeGlobalMessageId(state) {
       state.globalListeningMessageId = null;
     },
-    startTyping(state) {
-      state.isTyping = true;
-    },
-    stopTyping(state) {
-      state.isTyping = false;
-      state.typingMessageId = null;
+    setTyping(state, action: PayloadAction<number[]>) {
+      state.isTyping = action.payload;
     },
     startIsImageLoading(state) {
       state.isImageLoading = true;
@@ -94,9 +90,6 @@ export const chatSlice = createSlice({
       action: PayloadAction<IScrollToLoadingImageId | null>,
     ) {
       state.scrollToLoadingImageId = action.payload;
-    },
-    setMessageId(state, action: PayloadAction<number | string>) {
-      state.typingMessageId = action.payload;
     },
     fillChats(state, action: PayloadAction<FillChatsActionPayload>) {
       // modify state here

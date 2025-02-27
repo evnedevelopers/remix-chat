@@ -6,6 +6,12 @@ import { wsSlice } from "~/store/bus/ws/ws.slice";
 import { chatSlice } from "~/store/bus/chat/chat.slice";
 
 import { SendMessageRequestPayload } from "~/store/bus/typedefs";
+import { projectsActions } from "~/store/bus/projects/projects.actions";
+import { RootState } from "~/store";
+import { getProjectsMessages } from "~/store/bus/projects/projects.selectors";
+import { chatActions } from "~/store/bus/chat/chat.actions";
+import { IMessage } from "~/store/bus/chat/typedefs";
+import { getProfile } from "~/store/bus/profile/profile.selectors";
 
 export let socket: Socket | null = null;
 
@@ -21,10 +27,6 @@ export const wsActions = {
         dispatch(wsActions.setSocketsStatus('SEND'));
         dispatch(wsActions.setClosedSockets(false));
         dispatch(wsActions.startFetching());
-
-        if (payload.event !== 'visualize' && payload.app === 'chat') {
-          dispatch(chatSlice.actions.startTyping());
-        }
 
         dispatch(wsActions.send([payload]));
 
@@ -42,14 +44,55 @@ export const wsActions = {
       }
     }
   ),
-  connect: createAsyncThunk('ws/connect', async (nsp: string, { dispatch }) => {
+  connect: createAsyncThunk('ws/connect', async (nsp: string, { dispatch, getState, }) => {
     if (!socket) {
       const manager = new Manager({ autoConnect: false });
       socket = manager.socket(nsp);
 
       socket.on("connect", () => {
+        dispatch(wsActions.setSocketsStatus(manager!._readyState));
         dispatch(wsActions.setClosedSockets(false));
         dispatch(wsActions.setOpenedSockets(true));
+      });
+
+      socket.on("receiveMessage", ({
+        chatId,
+        message,
+        projectName,
+      }: {
+        chatId: number,
+        message: IMessage,
+        projectName: string;
+      }) => {
+        const state = getState();
+        const projectsMessages = getProjectsMessages(chatId, projectName)((state as RootState));
+
+        dispatch(
+          projectsActions.setMessages({
+            chatId,
+            projectsMessages: [
+              message,
+              ...(projectsMessages?.results ?? [])
+            ]
+          })
+        );
+      });
+
+      socket.on("userTyping", ({
+        typingIds
+      }: {
+        typingIds: number[]
+      }) => {
+        const state = getState();
+        const profile = getProfile(state as RootState);
+
+        dispatch(
+          chatActions.setTyping(
+            typingIds.filter(
+              (id) => id !== profile?.id
+            )
+          )
+        );
       });
 
       socket.on("disconnect", () => {
@@ -64,7 +107,7 @@ export const wsActions = {
   send: createAsyncThunk('ws/send', async (payload: unknown[]) => {
     socket?.send(...payload);
   }),
-  joinChat: createAsyncThunk('ws/joinChat', async (payload: unknown[]) => {
-    socket?.emit("joinChat", ...payload);
+  joinChat: createAsyncThunk('ws/joinChat', async (chatId: string) => {
+    socket?.emit("joinChat", chatId);
   }),
 }

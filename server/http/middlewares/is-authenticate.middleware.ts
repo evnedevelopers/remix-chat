@@ -1,5 +1,5 @@
 import { ActionFunctionArgs }  from "@remix-run/node";
-import { AuthService } from "server/services/auth/auth.service";
+import { AuthService } from "../../services/auth/auth.service";
 import { MiddlewareFunction } from "./typedefs";
 
 export const isAuthenticateMiddleware: MiddlewareFunction<ActionFunctionArgs> = async (args) => {

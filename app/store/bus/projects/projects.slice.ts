@@ -240,12 +240,12 @@ export const projectsSlice = createSlice({
         };
       });
     },
-    setMessages(state, action: PayloadAction<any>) {
+    setMessages(state, action: PayloadAction<{ chatId: number, projectsMessages: IMessage[] }>) {
       const errorIndex = action.payload.projectsMessages.findIndex(
-        (ms: any) => ms.type === 'error',
+        (ms: IMessage) => ms.type === 'error',
       );
       const filtered = action.payload.projectsMessages.filter(
-        (ms: any, index: number) => {
+        (ms: IMessage, index: number) => {
           if (errorIndex === -1) {
             return true;
           }

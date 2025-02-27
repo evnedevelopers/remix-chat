@@ -5,7 +5,7 @@ import { isIOS } from 'react-device-detect';
 import { MessageItem } from "~/segments/chat/MessageItem";
 import { SendMessageFunction } from "~/segments/chat/view/ChatIndexView/useChatPage";
 
-import { getGlobalMessageId, getIsChatTyping, getTypingMessageId } from "~/store/bus/chat/chat.selectors";
+import { getGlobalMessageId, getTypingMessageId } from "~/store/bus/chat/chat.selectors";
 import { getIsGlobalListening, getIsOneTimeSpeaking } from "~/store/bus/ui/ui.selectors";
 import { projectsActions } from "~/store/bus/projects/projects.actions";
 import { uiActions } from "~/store/bus/ui/ui.actions";
@@ -41,7 +41,6 @@ export const Messenger: FC<MessengerProps> = ({
   const globalMessageId = useSelector(getGlobalMessageId);
   const [isPlaying, setIsPlaying] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const isTyping = useSelector(getIsChatTyping);
 
   const handleAudioPlay = (audio: boolean) => {
     setIsPlaying(audio);
@@ -57,8 +56,7 @@ export const Messenger: FC<MessengerProps> = ({
     if (
       !isIOS &&
       globalMessageId &&
-      (isGlobalListening || oneTimeSpeaking) &&
-      !isTyping
+      (isGlobalListening || oneTimeSpeaking)
     ) {
       new Promise((resolve, reject) => {
         dispatch(
@@ -77,7 +75,7 @@ export const Messenger: FC<MessengerProps> = ({
           return error;
         });
     }
-  }, [globalMessageId, isGlobalListening, isTyping]);
+  }, [globalMessageId, isGlobalListening]);
 
   return (
     <>
@@ -91,7 +89,6 @@ export const Messenger: FC<MessengerProps> = ({
             id={message.id as number}
             isICreator={message.author.id === profile?.id}
             nextDate={nextDate?.createdAt}
-            isTypingMessage={typingMessageId === message.id}
             chatId={chatId}
             projectId={mainProjectId}
             lastHumanMessage={lastHumanMessage}

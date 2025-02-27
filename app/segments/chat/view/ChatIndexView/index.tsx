@@ -22,6 +22,7 @@ import { modalActions } from "~/store/bus/modal/modal.actions";
 import { AppDispatch } from "~/store";
 
 import { styles } from "~/segments/chat/view/ChatIndexView/styles";
+import { getSocketOpened } from "~/store/bus/ws/ws.selectors";
 
 export const ChatIndexView: FC = () => {
   const theme = useTheme();
@@ -35,6 +36,7 @@ export const ChatIndexView: FC = () => {
   const [currentChatId, setCurrentChatId] = useState(0);
   const refInput = useRef<HTMLDivElement>();
   const currentProject = useSelector(getCurrentProject(projectName));
+  const socketStatus = useSelector(getSocketOpened);
   const { currentYearId, currentMonthId, id } = useSelector(
     getChatData(chatId),
   );
@@ -44,8 +46,10 @@ export const ChatIndexView: FC = () => {
   }, [chatId, projectName]);
 
   useEffect(() => {
-    dispatch(wsActions.joinChat([chatId]));
-  }, [chatId, dispatch]);
+    if (socketStatus === 'open') {
+      dispatch(wsActions.joinChat(chatId.toString()));
+    }
+  }, [chatId, dispatch, socketStatus]);
 
   useEffect(() => {
     return () => {
