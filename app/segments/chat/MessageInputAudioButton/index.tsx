@@ -8,10 +8,9 @@ import { UpgradeTooltip } from "~/components/uiKit/Tooltip/UpgradeTooltip";
 import { IconButton } from "~/components/uiKit/IconButton";
 import { Tooltip } from "~/components/uiKit/Tooltip";
 
-import { DotsAnimation } from "~/segments/chat/DotsAnimation";
 import { StopRecordingButton } from "~/segments/chat/StopRecordingButton";
 
-import { getIsChatTyping, getIsRecording } from "~/store/bus/chat/chat.selectors";
+import { getIsRecording } from "~/store/bus/chat/chat.selectors";
 
 type MessageInputAudioButtonProps = {
   handleStartRecording: () => void;
@@ -23,7 +22,6 @@ export const MessageInputAudioButton: FC<MessageInputAudioButtonProps> = ({
   handleStopRecording,
 }) => {
   const theme = useTheme();
-
 
   const isRecording = useSelector(getIsRecording);
 

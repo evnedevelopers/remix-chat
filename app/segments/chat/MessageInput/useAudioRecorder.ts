@@ -86,7 +86,7 @@ export const useAudioRecorder = (scrollToBottom: () => void) => {
           dispatch(chatActions.startProcessing());
           try {
             const data = await fetch(
-              `${process.env.REACT_APP_API_URL}/messages/listen`,
+              `/messages/listen`,
               {
                 method: 'POST',
                 body: formData,

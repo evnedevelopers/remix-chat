@@ -53,7 +53,7 @@ export class ProjectService {
                   FROM ${messagesTable}
                   LEFT JOIN ${usersTable} ON ${messagesTable.authorId} = ${usersTable.id}
                   WHERE ${messagesTable.chatId} = ${chatsTable.id}
-                  ORDER BY ${messagesTable.createdAt} DESC
+                  ORDER BY ${messagesTable.createdAt} DESC, ${messagesTable.id} DESC
                   LIMIT 20
                 ) AS latest_messages
               )
@@ -82,14 +82,7 @@ export class ProjectService {
 
     if (!messages.length) return { results: [], status: true, count: 0 };
 
-    return messages.map((message) => {
-      return {
-        ...message,
-        results: [ ...message.results as { createdAt: string }[] ].sort((a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        ),
-      }
-    })[0];
+    return messages[0];
   }
 
   static async findUserChat({
@@ -134,7 +127,7 @@ export class ProjectService {
       .from(messagesTable)
       .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))
       .where(eq(messagesTable.chatId, chatId))
-      .orderBy(desc(messagesTable.createdAt))
+      .orderBy(desc(messagesTable.createdAt), desc(messagesTable.id))
       .limit(20)
       .as('chat_messages')
 

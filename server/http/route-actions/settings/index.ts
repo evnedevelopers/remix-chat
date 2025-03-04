@@ -8,8 +8,8 @@ export const loader: LoaderFunction = new RouteAction()
     middlewares: [isAuthenticateMiddleware],
     actionFunction: async () => {
       return json({
-        audio_recording_limit: 1000,
-        time_left_to_visualize: 0,
+        audioRecordingLimit: 60,
+        timeLeftToVisualize: 60,
       })
     }
   })
