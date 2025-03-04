@@ -1,5 +1,9 @@
 import { db } from "../db";
-import { messagesTable, usersTable } from "../db/schema";
+import { 
+  messagesTable,
+  savedMessagesTable,
+  usersTable
+} from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export class MessageService {
@@ -39,5 +43,15 @@ export class MessageService {
       images: [],
       author: author || null
     };
+  }
+
+  static markAsSaved({
+    authorId,
+    messageId,
+  }: {
+    authorId: number;
+    messageId: number;
+  }) {
+    return db.insert(savedMessagesTable).values({ authorId, messageId }).returning();
   }
 }

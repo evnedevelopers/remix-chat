@@ -1,4 +1,4 @@
-import { FC } from "react";
+import {FC, useMemo} from "react";
 import { useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -23,6 +23,7 @@ import { savedMessagesActions } from "~/store/bus/saved-messages/saved-messages.
 import { AppDispatch } from "~/store";
 
 import { styles } from './styles';
+import {getProfile} from "~/store/bus/profile/profile.selectors";
 
 type MessageActionsProps = {
   chatId: number | null;
@@ -30,7 +31,7 @@ type MessageActionsProps = {
   id: number;
   message: string;
   isICreator: boolean;
-  saved: string | null;
+  saved: { id: number; authorId: number; createdAt: string }[];
   isMockHuman: boolean;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -52,6 +53,10 @@ export const MessageActions: FC<MessageActionsProps> = ({
   const theme = useTheme();
   const { projectName } = useParams();
   const project = useSelector(getProjectId(projectName));
+  const profile = useSelector(getProfile);
+  const savedMemo = useMemo(() => {
+    return saved.find(({ authorId }) => authorId === profile?.id)?.createdAt || null
+  }, [saved, profile]);
 
   const copyContent = () => {
     copyText(message);
@@ -85,7 +90,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
 
   const saveMessage = () => {
     dispatch(chatSlice.actions.setTooltipStatus(null));
-    if (saved) {
+    if (savedMemo) {
       dispatch(
         modalSlice.actions.modal({
           component: 'ConfirmOrCancel',
@@ -175,7 +180,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
       )}
       {!isMockHuman && (
         <IconButton onClick={saveMessage} sx={styles.itemButton}>
-          {saved ? (
+          {savedMemo ? (
             <Star
               sx={{ fontSize: '16px' }}
               htmlColor={theme.palette.text.primary}

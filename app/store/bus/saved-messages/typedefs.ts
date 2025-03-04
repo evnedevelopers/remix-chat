@@ -25,7 +25,7 @@ export interface ISavedMessages {
 export interface ISavedMessage {
   id: number;
   createdAt: string;
-  savedAt: string;
+  savedAt: { createdAt: string; id: number; authorId: number; }[];
   project: {
     id: number;
     name: string;

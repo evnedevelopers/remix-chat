@@ -32,7 +32,7 @@ export interface IMessage {
   audio?: string | null;
   createdAt: string;
   messageRate: boolean | null;
-  savedAt: string | null;
+  savedAt: { id: number; createdAt: string; authorId: number }[];
   chatId?: number;
   projectId?: number;
   type?: string;

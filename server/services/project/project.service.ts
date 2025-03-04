@@ -5,12 +5,18 @@ import {
   chatsToProjectsTable,
   messagesTable,
   projectsTable,
+  savedMessagesTable,
   usersTable,
   usersToChatsTable
 } from "../db/schema";
 
 export class ProjectService {
   static findUserProjects(userId: number) {
+    const chatMessagesTable = this.getChatMessagesTable()
+      .where(eq(messagesTable.chatId, chatsTable.id))
+      .limit(20)
+      .as('latest_messages');
+
     return db.select({
       id: projectsTable.id,
       name: projectsTable.name,
@@ -39,23 +45,11 @@ export class ProjectService {
                     'files', '[]'::json,
                     'images', '[]'::json,
                     'author', latest_messages.author,
+                    'savedAt', latest_messages."savedAt",
                     'createdAt', latest_messages.created_at
                   )
                 )
-                FROM (
-                  SELECT 
-                    ${messagesTable}.*, 
-                    json_build_object(
-                      'id', ${usersTable.id},
-                      'firstName', ${usersTable.firstName},
-                      'lastName', ${usersTable.lastName}
-                    ) AS author
-                  FROM ${messagesTable}
-                  LEFT JOIN ${usersTable} ON ${messagesTable.authorId} = ${usersTable.id}
-                  WHERE ${messagesTable.chatId} = ${chatsTable.id}
-                  ORDER BY ${messagesTable.createdAt} DESC, ${messagesTable.id} DESC
-                  LIMIT 20
-                ) AS latest_messages
+                FROM ${chatMessagesTable}
               )
             )
           )
@@ -109,27 +103,10 @@ export class ProjectService {
   }
 
   static async findChatMessages(chatId: number) {
-    const chatMessagesTable = db
-      .select({
-        id: messagesTable.id,
-        text: messagesTable.text,
-        createdAt: messagesTable.createdAt,
-        files: sql`'[]'::json`,
-        images: sql`'[]'::json`,
-        author: sql`
-          json_build_object(
-            'id', ${usersTable.id},
-            'firstName', ${usersTable.firstName},
-            'lastName', ${usersTable.lastName}
-          ) as author
-        `
-      })
-      .from(messagesTable)
-      .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))
+    const chatMessagesTable = this.getChatMessagesTable()
       .where(eq(messagesTable.chatId, chatId))
-      .orderBy(desc(messagesTable.createdAt), desc(messagesTable.id))
       .limit(20)
-      .as('chat_messages')
+      .as('chat_messages');
 
     return db.select({
       status: sql`TRUE`,
@@ -143,6 +120,7 @@ export class ProjectService {
               'files', '[]'::json,
               'images', '[]'::json,
               'author', chat_messages.author,
+              'savedAt', chat_messages."savedAt",
               'createdAt', chat_messages.created_at
             )
           )
@@ -153,5 +131,39 @@ export class ProjectService {
     .from(messagesTable)
     .where(eq(messagesTable.chatId, chatId))
     .groupBy(messagesTable.chatId);
+  }
+
+  private static getChatMessagesTable() {
+    return db
+      .select({
+        id: messagesTable.id,
+        text: messagesTable.text,
+        createdAt: messagesTable.createdAt,
+        files: sql`'[]'::json`,
+        images: sql`'[]'::json`,
+        author: sql`
+          json_build_object(
+            'id', ${usersTable.id},
+            'firstName', ${usersTable.firstName},
+            'lastName', ${usersTable.lastName}
+          ) as author
+        `,
+        savedAt: sql`COALESCE((
+          SELECT json_agg(saved.savedAt)
+          FROM (
+            SELECT json_build_object(
+              'id', ${savedMessagesTable}.id,
+              'authorId', ${savedMessagesTable}.author_id,
+              'createdAt', ${savedMessagesTable}.created_at
+            ) as savedAt
+            FROM ${savedMessagesTable}
+            WHERE ${messagesTable.id} = ${savedMessagesTable}.message_id
+            ORDER BY ${savedMessagesTable}.created_at DESC
+          ) as saved
+        ), '[]'::json)`.as('savedAt')
+      })
+      .from(messagesTable)
+      .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))
+      .orderBy(desc(messagesTable.createdAt), desc(messagesTable.id))
   }
 }

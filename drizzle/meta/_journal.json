@@ -15,6 +15,13 @@
       "when": 1739787692399,
       "tag": "0001_burly_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741078377871,
+      "tag": "0002_romantic_stark_industries",
+      "breakpoints": true
     }
   ]
 }

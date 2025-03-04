@@ -10,6 +10,7 @@ import { savedMessagesSlice } from "~/store/bus/saved-messages/saved-messages.sl
 import { uiSlice } from "~/store/bus/ui/ui.slice";
 import { settingsSlice } from "~/store/bus/settings/settings.slice";
 import { aiConversationSlice } from "~/store/bus/ai-conversation/ai-conversation.slice";
+import { persistSlice } from "~/store/bus/persist/persist.slice";
 import { rootSaga } from './rootSaga';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -17,6 +18,7 @@ const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
   reducer: {
     [modalSlice.name]: modalSlice.reducer,
+    [persistSlice.name]: persistSlice.reducer,
     [uiSlice.name]: uiSlice.reducer,
     [settingsSlice.name]: settingsSlice.reducer,
     [wsSlice.name]: wsSlice.reducer,

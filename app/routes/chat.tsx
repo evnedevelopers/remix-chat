@@ -3,6 +3,10 @@ import { useDispatch } from "react-redux";
 import { useLoaderData } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
 
+import { Modals } from "app/components/modals/Modals";
+
+import { registeredModals } from "~/components/modals/registeredModals";
+
 import { ChatIndexView } from "~/segments/chat/view/ChatIndexView";
 
 import { projectsActions } from "~/store/bus/projects/projects.actions";
@@ -45,6 +49,9 @@ export default function ChatIndex() {
   }, []);
 
   return (
-    <ChatIndexView />
+    <>
+      <Modals registeredModals={registeredModals} />
+      <ChatIndexView />
+    </>
   )
 }

@@ -19,7 +19,7 @@ type MessageItemHeaderProps = {
   id: number;
   rate: boolean | null;
   message: string;
-  saved: string | null;
+  saved: { id: number; authorId: number; createdAt: string }[];
   isMockHuman: boolean;
   messageItem: IMessage;
   projectId: number;

@@ -47,7 +47,8 @@ export const usersToChatsRelations = relations(usersToChatsTable, ({ one }) => (
 
 export const userRelations = relations(usersTable, ({ many }) => ({
   chats: many(usersToChatsTable),
-  messages: many(messagesTable)
+  messages: many(messagesTable),
+  savedMessages: many(savedMessagesTable),
 }));
 
 export const chatsRelations = relations(chatsTable, ({ many }) => ({
@@ -68,7 +69,25 @@ export const messagesTable = pgTable("messages", {
     .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 });
 
-export const messagesRelations = relations(messagesTable, ({ one }) => ({
+export const savedMessagesTable = pgTable("saved_messages", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  messageId: integer('message_id'),
+  authorId: integer('author_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const savedMessagesRelations = relations(savedMessagesTable, ({ one }) => ({
+  message: one(messagesTable, {
+    fields: [savedMessagesTable.messageId],
+    references: [messagesTable.id],
+  }),
+  author: one(usersTable, {
+    fields: [savedMessagesTable.authorId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const messagesRelations = relations(messagesTable, ({ one, many }) => ({
   chat: one(chatsTable, {
     fields: [messagesTable.chatId],
     references: [chatsTable.id],
@@ -76,7 +95,8 @@ export const messagesRelations = relations(messagesTable, ({ one }) => ({
   author: one(usersTable, {
     fields: [messagesTable.authorId],
     references: [usersTable.id],
-  })
+  }),
+  savedMessages: many(savedMessagesTable)
 }));
 
 export const projectsTable = pgTable("projects", {
