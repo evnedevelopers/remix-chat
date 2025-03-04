@@ -5,22 +5,17 @@ import { MessageService } from "../../../services/message/message.service";
 
 export const action: ActionFunction = new RouteAction()
   .addMethod({
-    method: 'post',
+    method: 'delete',
     middlewares: [isAuthenticateMiddleware],
-    actionFunction: async ({ request, params }) => {
+    actionFunction: async ({ params, request }) => {
       const authorId = request.authUser!.id;
       const messageId = Number(params.messageId);
 
       const message = await MessageService.getUserMessage(authorId, messageId);
-      const [savedAt] = await MessageService.findOrMarkAsSaved({ authorId, messageId });
+      await MessageService.unmarkSaved({ authorId, messageId });
 
-      message.savedAt = [
-        savedAt,
-        ...(
-          message.savedAt as (typeof savedAt)[])
-            .filter(( {id }) => id !== savedAt.id
-        ),
-      ];
+      message.savedAt = (message.savedAt as { messageId: number; authorId: number }[])
+        .filter((entity) => !(entity.messageId === messageId && entity.authorId === authorId));
 
       return json(message);
     }

@@ -133,21 +133,21 @@ export class ProjectService {
     .groupBy(messagesTable.chatId);
   }
 
-  private static getChatMessagesTable() {
+  static getChatMessagesTable() {
     return db
       .select({
         id: messagesTable.id,
         text: messagesTable.text,
         createdAt: messagesTable.createdAt,
-        files: sql`'[]'::json`,
-        images: sql`'[]'::json`,
+        files: sql`'[]'::json`.as('files'),
+        images: sql`'[]'::json`.as('images'),
         author: sql`
           json_build_object(
             'id', ${usersTable.id},
             'firstName', ${usersTable.firstName},
             'lastName', ${usersTable.lastName}
-          ) as author
-        `,
+          )
+        `.as('author'),
         savedAt: sql`COALESCE((
           SELECT json_agg(saved.savedAt)
           FROM (
@@ -164,6 +164,6 @@ export class ProjectService {
       })
       .from(messagesTable)
       .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))
-      .orderBy(desc(messagesTable.createdAt), desc(messagesTable.id))
+      .orderBy(desc(messagesTable.createdAt), desc(messagesTable.id));
   }
 }

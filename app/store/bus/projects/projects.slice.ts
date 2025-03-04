@@ -579,7 +579,7 @@ export const projectsSlice = createSlice({
                     if (message.id === action.payload) {
                       return {
                         ...message,
-                        saved_at: null,
+                        savedAt: [],
                       };
                     }
 
