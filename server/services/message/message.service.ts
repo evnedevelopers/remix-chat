@@ -43,7 +43,9 @@ export class MessageService {
       ...newMessage,
       files: [],
       images: [],
-      author: author || null
+      author: author || null,
+      savedAt: [],
+      messageRate: []
     };
   }
 

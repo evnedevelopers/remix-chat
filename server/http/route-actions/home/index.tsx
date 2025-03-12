@@ -30,8 +30,6 @@ export const action: ActionFunction = new RouteAction()
 
       const isInvalid = typeof username !== 'string' || typeof password !== 'string';
 
-      console.log({ username, password, isInvalid });
-
       if (isInvalid) {
         return json({ error: 'Invalid Form Data', form: action });
       }

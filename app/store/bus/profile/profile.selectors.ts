@@ -25,3 +25,8 @@ export const getCurrentDataset = createSelector(
     return currentDataset;
   },
 );
+
+export const getFullName = createSelector(
+  [profileSelectors],
+  ({ profile }) => `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim()
+);

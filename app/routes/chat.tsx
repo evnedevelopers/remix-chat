@@ -3,8 +3,9 @@ import { useDispatch } from "react-redux";
 import { useLoaderData } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
 
-import { Modals } from "app/components/modals/Modals";
+import { alpha, Box, Stack } from "@mui/material";
 
+import { Modals } from "app/components/modals/Modals";
 import { registeredModals } from "~/components/modals/registeredModals";
 
 import { ChatIndexView } from "~/segments/chat/view/ChatIndexView";
@@ -14,8 +15,10 @@ import { profileActions } from "~/store/bus/profile/profile.actions";
 import { wsActions } from "~/store/bus/ws/ws.actions";
 import { IProjects } from "~/store/bus/projects/typedefs";
 import { IProfile } from "~/store/bus/profile/typedefs";
-import { AppDispatch } from "~/store";
 import { IMessages } from "~/store/bus/chat/typedefs";
+import { AppDispatch } from "~/store";
+import SideMenu, {drawerWidth} from "~/components/common/SideMenu";
+import AppNavbar from "~/components/common/AppNavbar";
 
 export interface ILoaderFunctionResult {
   authUser: IProfile;
@@ -51,7 +54,38 @@ export default function ChatIndex() {
   return (
     <>
       <Modals registeredModals={registeredModals} />
-      <ChatIndexView />
+      <SideMenu />
+      <Box
+        component="main"
+        sx={{
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          marginLeft: { md: 'auto' }
+        }}>
+        <AppNavbar />
+        <ChatIndexView />
+      </Box>
+      {/*<SideMenu />*/}
+      {/*<AppNavbar />*/}
+      {/*<Box*/}
+      {/*  component="main"*/}
+      {/*  sx={(theme) => ({*/}
+      {/*    flexGrow: 1,*/}
+      {/*    backgroundColor: alpha(theme.palette.background.default, 1),*/}
+      {/*    overflow: 'auto',*/}
+      {/*  })}*/}
+      {/*>*/}
+      {/*  <Stack*/}
+      {/*    spacing={2}*/}
+      {/*    sx={{*/}
+      {/*      alignItems: 'center',*/}
+      {/*      mx: 3,*/}
+      {/*      pb: 5,*/}
+      {/*      mt: { xs: 8.2, md: 0 },*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    */}
+      {/*  </Stack>*/}
+      {/*</Box>*/}
     </>
   )
 }

@@ -8,6 +8,11 @@ export const styles = {
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: {
+      md: 0,
+      sm: '66px',
+      xs: '56px'
+    }
   },
   messenger: (theme: Theme, size: number) => ({
     position: 'relative',
