@@ -2,6 +2,7 @@ import { integer, pgTable, timestamp, varchar, text, primaryKey, pgEnum, date } 
 import { relations, sql } from "drizzle-orm";
 
 export const genderEnum = pgEnum("gender", ["male", "female"]);
+export const messageActionEnum = pgEnum("message_action", ["like", "dislike"]);
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -71,21 +72,17 @@ export const messagesTable = pgTable("messages", {
 
 export const savedMessagesTable = pgTable("saved_messages", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  messageId: integer('message_id'),
-  authorId: integer('author_id'),
+  messageId: integer('message_id').references(() => messagesTable.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+  authorId: integer('author_id').references(() => usersTable.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const savedMessagesRelations = relations(savedMessagesTable, ({ one }) => ({
-  message: one(messagesTable, {
-    fields: [savedMessagesTable.messageId],
-    references: [messagesTable.id],
-  }),
-  author: one(usersTable, {
-    fields: [savedMessagesTable.authorId],
-    references: [usersTable.id],
-  }),
-}));
+export const messagesActionsTable = pgTable('messages_actions', {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  messageId: integer('message_id').references(() => messagesTable.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+  authorId: integer('author_id').references(() => usersTable.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+  action: messageActionEnum("action").notNull(),
+});
 
 export const messagesRelations = relations(messagesTable, ({ one, many }) => ({
   chat: one(chatsTable, {
@@ -96,7 +93,8 @@ export const messagesRelations = relations(messagesTable, ({ one, many }) => ({
     fields: [messagesTable.authorId],
     references: [usersTable.id],
   }),
-  savedMessages: many(savedMessagesTable)
+  savedMessages: many(savedMessagesTable),
+  messageActions: many(messagesActionsTable),
 }));
 
 export const projectsTable = pgTable("projects", {

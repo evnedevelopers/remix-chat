@@ -33,7 +33,7 @@ export interface ISavedMessage {
     iconDark: string;
   };
   showCreateChatMessage: boolean;
-  messageRate: null | boolean;
+  messageRate: { id: number; authorId: number; action: string; }[];
   text: string;
   author: { id: number | string; };
   images: IMessageImage[];

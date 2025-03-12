@@ -31,7 +31,7 @@ export interface IMessage {
   author: { id: number | string; };
   audio?: string | null;
   createdAt: string;
-  messageRate: boolean | null;
+  messageRate: { id: number; authorId: number; action: string}[];
   savedAt: { id: number; createdAt: string; authorId: number }[];
   chatId?: number;
   projectId?: number;

@@ -5,7 +5,7 @@ export type FillProjectsActionPayload = IProjects[];
 export type PostRateActionPayload = {
   chatId: number | null;
   messageId: number;
-  rate: boolean;
+  rate: { id: number; action: string; authorId: number; }[];
 };
 export type UpdateGuidanceActionPayload = {
   guide: IGuidance;

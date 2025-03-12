@@ -170,8 +170,9 @@ export const projectsActions = {
         if (!response.ok) {
           meta.reject();
         }
+        const json: { messageRate: { id: number, authorId: number; action: string }[] } = await response.json();
 
-        dispatch(projectsActions.changeRate(payload as PostRateActionPayload));
+        dispatch(projectsActions.changeRate({...payload, rate: json.messageRate } as PostRateActionPayload));
         meta.resolve();
       } catch (e) {
         return rejectWithValue(e);

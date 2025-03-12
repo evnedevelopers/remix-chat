@@ -2,7 +2,7 @@ import { db } from '../db';
 import { desc, eq, sql } from "drizzle-orm";
 import {
   chatsTable,
-  chatsToProjectsTable,
+  chatsToProjectsTable, messagesActionsTable,
   messagesTable,
   projectsTable,
   savedMessagesTable,
@@ -121,6 +121,7 @@ export class ProjectService {
               'images', '[]'::json,
               'author', chat_messages.author,
               'savedAt', chat_messages."savedAt",
+              'messageRate', chat_messages."messageRate",
               'createdAt', chat_messages.created_at
             )
           )
@@ -160,7 +161,19 @@ export class ProjectService {
             WHERE ${messagesTable.id} = ${savedMessagesTable}.message_id
             ORDER BY ${savedMessagesTable}.created_at DESC
           ) as saved
-        ), '[]'::json)`.as('savedAt')
+        ), '[]'::json)`.as('savedAt'),
+        messageRate: sql`COALESCE((
+          SELECT json_agg(action.rate)
+          FROM (
+            SELECT json_build_object(
+              'id', ${messagesActionsTable}.id,
+              'authorId', ${messagesActionsTable}.author_id,
+              'action', ${messagesActionsTable}.action
+            ) as rate
+            FROM ${messagesActionsTable}
+            WHERE ${messagesTable.id} = ${messagesActionsTable}.message_id
+          ) as action
+        ), '[]'::json)`.as('messageRate'),
       })
       .from(messagesTable)
       .leftJoin(usersTable, eq(messagesTable.authorId, usersTable.id))

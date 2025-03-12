@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import {FC, useMemo, useState} from "react";
 import { useSelector } from "react-redux";
 
 import { Box, Typography, useTheme } from "@mui/material";
@@ -17,7 +17,7 @@ type MessageItemHeaderProps = {
   isICreator: boolean;
   chatId: number | null;
   id: number;
-  rate: boolean | null;
+  rate: { id: number; authorId: number; action: string; }[];
   message: string;
   saved: { id: number; authorId: number; createdAt: string }[];
   isMockHuman: boolean;
@@ -41,6 +41,12 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
   const theme = useTheme();
   const profile = useSelector(getProfile);
   const [isOpen, setIsOpen] = useState(false);
+  const myRate = useMemo(() => {
+    const messageRate = rate.find(({ authorId }) => authorId === profile?.id);
+    if (!messageRate) return null;
+
+    return messageRate.action.toLowerCase() === 'like';
+  }, [profile, rate]);
 
   return (
     <Box sx={[styles.messageItemHeader, isICreator && styles.human]}>
@@ -108,7 +114,7 @@ export const MessageItemHeader: FC<MessageItemHeaderProps> = ({
         </IconButton>
         <MessageActions
           chatId={chatId}
-          rate={rate}
+          rate={myRate}
           id={id}
           message={message}
           isICreator={isICreator}

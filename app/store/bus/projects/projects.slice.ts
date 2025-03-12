@@ -402,7 +402,7 @@ export const projectsSlice = createSlice({
                     if (message.id === action.payload.messageId) {
                       return {
                         ...message,
-                        message_rate: action.payload.rate,
+                        messageRate: action.payload.rate,
                       };
                     }
 
