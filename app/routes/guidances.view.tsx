@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { ActionFunction, json } from "@remix-run/node";
 import { RouteAction } from "../../server/http/route-actions/route-action";
 import { isAuthenticateMiddleware } from "../../server/http/middlewares/is-authenticate.middleware";
