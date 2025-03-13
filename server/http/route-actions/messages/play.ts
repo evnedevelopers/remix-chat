@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
-import { json, LoaderFunction } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/node";
 import { RouteAction } from "../route-action";
 import { isAuthenticateMiddleware } from "../../middlewares/is-authenticate.middleware";
 

@@ -85,9 +85,7 @@ export const ChatIndexView: FC = () => {
     refInput.current && setSize(refInput.current?.clientHeight);
   }, [refInput.current?.clientHeight]);
 
-  const handleClick = (id: number) => {
-    alert('handleClick: ' + id);
-  };
+  const handleClick = () => {};
 
   const handleAction = (chatId: number, name: string) => {
     dispatch(

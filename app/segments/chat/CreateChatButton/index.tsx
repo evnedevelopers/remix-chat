@@ -76,22 +76,6 @@ export const CreateChatButton: FC<CreateChatButtonProps> = ({
       }),
     );
     setValue('');
-    new Promise((resolve, reject) => {
-      dispatch(
-        projectsActions.updateChat({
-          payload: {
-            id: currentChatId,
-            waitingUserResponse: false,
-          },
-          meta: {
-            resolve,
-            reject,
-          }
-        }),
-      );
-    })
-      .then()
-      .catch();
   };
 
   const createNewChat = () => {

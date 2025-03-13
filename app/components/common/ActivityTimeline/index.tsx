@@ -265,14 +265,16 @@ export const ActivityTimeline: FC<ActivityTimelineProps> = ({
                           maxWidth: 'max-content',
                           height: 'max-content',
                         }}>
-                        <IconButton
-                          sx={styles.createButton}
-                          onClick={handleCreateNewChat}>
-                          <Plus
-                            fontSize={'small'}
-                            htmlColor={theme.palette.text.primary}
-                          />
-                        </IconButton>
+                        {/*<IconButton*/}
+                        {/*  sx={styles.createButton}*/}
+                        {/*  onClick={handleCreateNewChat}*/}
+                        {/*  disabled*/}
+                        {/*>*/}
+                        {/*  <Plus*/}
+                        {/*    fontSize={'small'}*/}
+                        {/*    htmlColor={theme.palette.text.primary}*/}
+                        {/*  />*/}
+                        {/*</IconButton>*/}
                       </SwiperSlide>
                     )}
                     {selectedSessions?.map((item) => (
