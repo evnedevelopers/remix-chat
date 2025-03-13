@@ -82,7 +82,7 @@ export const MessagesList: FC<MessagesListProps> = ({
       dispatch(settingsActions.fetchSettings());
       !isFetching &&
       chatId &&
-      typeof oldestId === 'string' &&
+      typeof oldestId === 'number' &&
       dispatch(
         chatActions.loadMoreMessages({
           payload: {
@@ -96,7 +96,7 @@ export const MessagesList: FC<MessagesListProps> = ({
       return;
     }
     if (scrollTop === 0) {
-      if (chatId && typeof newestId === 'string') {
+      if (chatId && typeof newestId === 'number') {
         return new Promise((resolve) => {
           dispatch(
             chatActions.loadPrevMessages({

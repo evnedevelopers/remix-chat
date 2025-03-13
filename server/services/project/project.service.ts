@@ -1,5 +1,5 @@
 import { db } from '../db';
-import { desc, eq, sql } from "drizzle-orm";
+import { and, lt, gt, desc, eq, sql } from "drizzle-orm";
 import {
   chatsTable,
   chatsToProjectsTable, messagesActionsTable,
@@ -66,13 +66,17 @@ export class ProjectService {
 
   static async findUserChatMessages({
     userId,
-    chatId
+    chatId,
+    mtId,
+    ltId,
   }: {
     userId: number,
-    chatId: number
+    chatId: number,
+    mtId?: number,
+    ltId?: number,
   }) {
     await this.findUserChat({ userId, chatId });
-    const messages = await this.findChatMessages(chatId);
+    const messages = await this.findChatMessages(chatId, mtId, ltId);
 
     if (!messages.length) return { results: [], status: true, count: 0 };
 
@@ -102,9 +106,15 @@ export class ProjectService {
     return chat;
   }
 
-  static async findChatMessages(chatId: number) {
+  static async findChatMessages(chatId: number, mtId?: number, ltId?: number) {
+    const where = and(
+      eq(messagesTable.chatId, chatId),
+      typeof ltId === "number" ? lt(messagesTable.id, ltId) : undefined,
+      typeof mtId === "number" ? gt(messagesTable.id, mtId) : undefined
+    );
+
     const chatMessagesTable = this.getChatMessagesTable()
-      .where(eq(messagesTable.chatId, chatId))
+      .where(where)
       .limit(20)
       .as('chat_messages');
 
@@ -112,7 +122,7 @@ export class ProjectService {
       status: sql`TRUE`,
       count: sql`COUNT(${messagesTable}.id)::INTEGER`,
       results: sql`
-        (
+        COALESCE((
           SELECT json_agg(
             json_build_object(
               'id', chat_messages.id,
@@ -126,7 +136,7 @@ export class ProjectService {
             )
           )
           FROM ${chatMessagesTable}
-        )
+        ), '[]'::json)
       `
     })
     .from(messagesTable)
